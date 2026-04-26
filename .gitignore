@@ -1,0 +1,15 @@
+# Entorno virtual
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Config local
+.python-version
+.env
+
+# Imágenes generadas o temporales
+output/
+*.jpg
+*.png
