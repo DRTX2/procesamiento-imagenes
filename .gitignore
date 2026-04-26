@@ -1,17 +1,37 @@
 # Entorno virtual
 .venv/
+env/
+venv/
 
 # Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
 
 # Config local
 .python-version
 .env
-
-
-# Imágenes generadas o temporales
-output/
-*.jpg
-*.png
 .codex
+
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.toc
+*.out
+*.nav
+*.snm
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
