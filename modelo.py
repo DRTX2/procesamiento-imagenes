@@ -2,7 +2,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-IMAGE_EXTENSIONS = ("*.png", "*.jpg", "*.jpeg", "*.bmp", "*.tif", "*.tiff")
+DEFAULT_IMAGE_PATH = Path("informe/formación estelar de W51.png")
 CHANNEL_SPECS = {
     "r": {"name": "R", "title": "Canal R - Rojo", "color": "#B46A6A", "index": 0},
     "g": {"name": "G", "title": "Canal G - Verde", "color": "#5F8A63", "index": 1},
@@ -11,26 +11,7 @@ CHANNEL_SPECS = {
 BLOCK_OPTIONS = [2, 4, 8, 16]
 
 def buscar_imagen_inicial():
-    candidatos = [
-        "image.png",
-        "image.jpg",
-        "image.jpeg",
-        "image.bmp",
-        "image.tif",
-        "image.tiff",
-    ]
-
-    for nombre in candidatos:
-        ruta = Path(nombre)
-        if ruta.exists():
-            return ruta
-
-    for patron in IMAGE_EXTENSIONS:
-        rutas = sorted(Path(".").glob(patron))
-        if rutas:
-            return rutas[0]
-
-    return None
+    return DEFAULT_IMAGE_PATH if DEFAULT_IMAGE_PATH.exists() else None
 
 def cargar_imagen(path=None):
     if not path:
@@ -50,6 +31,7 @@ def gris_luma(img_rgb):
     return (0.299 * r + 0.587 * g + 0.114 * b).astype(np.uint8)
 
 def expansion_minmax(canal, vmin, vmax):
+    # Evita división por cero cuando el rango es inválido o plano.
     if vmax <= vmin:
         return np.where(canal >= vmax, 255, 0).astype(np.uint8)
     f = canal.astype(np.float32)
@@ -61,12 +43,14 @@ def reducir_resolucion(imagen_gris, n):
         return imagen_gris.copy()
 
     h, w = imagen_gris.shape
+    # Se recorta a múltiplos de n para poder agrupar bloques n x n sin errores de forma.
     hr, wr = (h // n) * n, (w // n) * n
     rec = imagen_gris[:hr, :wr].astype(np.float32)
     prom = rec.reshape(hr // n, n, wr // n, n).mean(axis=(1, 3))
     amp = np.repeat(np.repeat(prom, n, axis=0), n, axis=1)
 
     res = imagen_gris.copy().astype(np.float32)
+    # Conserva los bordes sobrantes (si no son múltiplo de n) tal como estaban.
     res[:hr, :wr] = amp
     return np.clip(res, 0, 255).astype(np.uint8)
 

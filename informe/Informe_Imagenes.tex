@@ -132,7 +132,12 @@ Esta es una de las imágenes más recientes y de mayor resolución obtenidas en 
 
 \textbf{Impacto en la aplicación:} Las imágenes muestran nubes de gas brillantes iluminadas por estrellas masivas, junto con burbujas de gas ionizado, filamentos oscuros de polvo y chorros de material expulsados por estrellas jóvenes. El procesamiento de normalización \textit{min-max} que se detalla en este informe es ideal para rescatar información en zonas de baja intensidad (estrellas ``escondidas'' detrás del gas más caliente) y revelar estructuras que en la imagen original se presentan con contraste reducido. Este análisis constituye un caso de uso real de las capacidades de la herramienta para rescatar información espectral y espacial subyacente.
 
-% AQUÍ AGREGA UNA IMAGEN: Captura de pantalla de la interfaz completa de la aplicación con la imagen de W51 ya cargada, mostrando ambas páginas (Normalización y Compresión y Binarización).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{img/app_interfaz_w51.png} % REEMPLAZAR: captura de la app con W51 cargada (pantalla de Normalización)
+    \caption{Interfaz de la herramienta con la imagen de W51 cargada, mostrando la página de Normalización con los cuatro paneles: imagen original, canal R, canal G y canal B.}
+    \label{fig:app_interfaz}
+\end{figure}
 
 \begin{figure}[H]
     \centering
@@ -149,15 +154,25 @@ En esta sección se documenta el procedimiento aplicado sobre la imagen de la re
 
 La imagen empleada corresponde a la región de formación estelar W51, obtenida por el JWST en el infrarrojo cercano y medio. Esta imagen constituye el punto de partida del procesamiento. Su características más relevante para los fines de esta práctica es que presenta amplias zonas de alto brillo (nubes de gas ionizado) junto con regiones de muy baja intensidad donde se encuentran las estrellas en formación, cubiertas por polvo. Esto genera un histograma comprimido con concentración en valores intermedios y una diferencia de contraste local reducida, lo cual la convierte en un caso de estudio ideal para la expansión min-max.
 
-% AQUÍ AGREGA UNA IMAGEN: Vista de la imagen original cargada en la primera pantalla (sección de Normalización) de la aplicación, mostrando el panel "Imagen Original".
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{img/w51_original_panel.png} % REEMPLAZAR: recorte del panel "Imagen Original" de la app
+    \caption{Panel de imagen original en la herramienta, mostrando la región W51 tal como fue cargada, sin ningún procesamiento aplicado.}
+    \label{fig:original_panel}
+\end{figure}
 
 \subsubsection{Análisis de histogramas originales}
 
 Antes de aplicar cualquier transformación, la herramienta genera automáticamente los histogramas de los tres canales RGB de la imagen original para cada canal por separado. Estos histogramas muestran la distribución real de intensidades tal como aparece en la imagen base. El eje horizontal representa el valor de intensidad del píxel (de 0 a 255) y el eje vertical indica la cantidad de píxeles con ese valor.
 
-% AQUÍ AGREGA UNA IMAGEN: Captura de los histogramas originales mostrados por la aplicación para los tres canales R, G y B (cada uno en su tarjeta, sección "ORIGINAL" de cada canal).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{img/histogramas_originales_rgb.png} % REEMPLAZAR: captura de las tres tarjetas de canal mostrando los histogramas "ORIGINAL"
+    \caption{Histogramas originales de los canales R, G y B de la imagen W51, generados por la herramienta antes de aplicar ninguna transformación.}
+    \label{fig:hist_orig}
+\end{figure}
 
-Los tres canales de la imagen infrarroja del JWST presentan distribuciones distintas. El canal rojo concentra sus valores en rangos medios-altos, asociados a la emisión de gas caliente; el canal verde refleja el contraste entre el polvo frío y el gas ionizado; y el canal azul tiende a presentar una distribución más comprimida, con información concentrada en intensidades bajas-medias, correspondiente a estructuras más frías o alejadas del frente de ionización.
+Los tres canales de la imagen infrarroja del JWST presentan distribuciones distintas. El canal rojo concentra sus valores en el rango de 0 a 250, con mayor densidad entre 50 y 180, correspondiente a la emisión general del gas caliente. El canal verde presenta su concentración entre 0 y 100, con una caída pronunciada a partir de los 50 niveles de intensidad, reflejando el contraste entre el polvo frío y el gas ionizado. El canal azul muestra una distribución similar al verde pero con la masa principal de píxeles concentrada entre 0 y 80, correspondiente a estructuras más frías o alejadas del frente de ionización.
 
 \subsubsection{Normalización por canales}
 
@@ -168,7 +183,15 @@ La fórmula aplicada corresponde a la normalización min-max:
     p_{nuevo} = \frac{p - p_{\min}}{p_{\max} - p_{\min}} \times 255
     \label{eq:normalizacion}
 \end{equation}
-donde $p$ es el valor original del píxel, $p_{\min}$ y $p_{\max}$ son los límites inferior y superior del rango elegido, y $p_{nuevo}$ es el valor resultante. Los píxeles por debajo de $p_{\min}$ se fijan en 0 y los que superan $p_{\max}$ se fijan en 255. La implementación en \texttt{modelo.py} aplica esta fórmula de forma independiente sobre cada canal, procesando el arreglo NumPy completo del canal sin iterar sobre píxeles individuales, lo que garantiza eficiencia en imágenes de alta resolución.
+donde $p$ es el valor original del píxel, $p_{\min}$ y $p_{\max}$ son los límites inferior y superior del rango elegido, y $p_{nuevo}$ es el valor resultante. Los píxeles por debajo de $p_{\min}$ se fijan en 0 y los que superan $p_{\max}$ se fijan en 255. La implementación en \texttt{modelo.py} aplica esta fórmula de forma independiente sobre cada canal, procesando el arreglo NumPy completo sin iterar sobre píxeles individuales.
+
+Los rangos aplicados a cada canal para la imagen W51 son los siguientes:
+
+\textbf{Canal rojo: $p_{\min} = 36$, $p_{\max} = 170$.} El canal rojo presenta el rango más amplio entre los tres canales. Al excluir los 36 niveles inferiores (fondo oscuro del espacio) y recortar la saturación a partir de 170, se evita que las zonas de mayor brillo del gas ionizado dominen la normalización, preservando la información de contraste en las regiones intermedias donde se encuentran las estructuras estelares en formación.
+
+\textbf{Canal verde: $p_{\min} = 88$, $p_{\max} = 255$.} El canal verde concentra su información útil a partir de los 88 niveles de intensidad. Al fijar el mínimo en ese punto, se eliminan los píxeles oscuros del fondo que no aportan información relevante y se expande el rango efectivo hacia el límite superior, logrando el mayor incremento de contraste en bordes y filamentos de polvo.
+
+\textbf{Canal azul: $p_{\min} = 35$, $p_{\max} = 255$.} El canal azul presenta una distribución concentrada en valores bajos. Al establecer el mínimo en 35 se descartan únicamente los niveles más oscuros del fondo, y al mantener el máximo en 255 se aprovecha toda la información disponible en el canal, ampliando la representación de las estructuras más frías de la región.
 
 Una vez normalizados los tres canales de forma independiente, se reconstruye la imagen RGB normalizada ($RGB_{norm}$) apilando los canales resultantes mediante \texttt{np.stack}. Esta imagen sirve como entrada única y coherente para los procesos de la segunda etapa.
 
@@ -176,29 +199,54 @@ Una vez normalizados los tres canales de forma independiente, se reconstruye la 
 
 Tras aplicar la normalización se generan automáticamente los histogramas correspondientes a cada canal, que la herramienta muestra en las tarjetas de canal (sección ``NORMALIZADO'') junto al histograma original, permitiendo una comparación directa.
 
-% AQUÍ AGREGA UNA IMAGEN: Captura de los histogramas normalizados de los tres canales R, G y B tal como los muestra la aplicación (sección "NORMALIZADO" dentro de cada tarjeta de canal). Compáralos con los originales para evidenciar la expansión.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{img/histogramas_normalizados_rgb.png} % REEMPLAZAR: captura de las tres tarjetas mostrando los histogramas "NORMALIZADO"
+    \caption{Histogramas normalizados de los canales R ($p_{\min}=36$, $p_{\max}=170$), G ($p_{\min}=88$, $p_{\max}=255$) y B ($p_{\min}=35$, $p_{\max}=255$) tras aplicar la expansión min-max.}
+    \label{fig:hist_norm}
+\end{figure}
 
-En los tres canales se observa que la distribución se expande y ocupa un tramo más amplio del eje de intensidades respecto al histograma original. Los valores inferiores al umbral mínimo se acumulan en el extremo izquierdo (valor 0) y los superiores al máximo en el extremo derecho (valor 255). La distribución intermedia, que en el original estaba comprimida, queda ahora repartida a lo largo de un rango mayor. Esto se traduce en mayores diferencias de brillo entre píxeles vecinos, mecanismo por el cual la normalización mejora el contraste percibido de la imagen.
+En los tres canales se observa que la distribución se expande y ocupa un tramo más amplio del eje de intensidades respecto al histograma original. Los valores inferiores al $p_{\min}$ de cada canal se acumulan en el extremo izquierdo (valor 0) y los superiores al $p_{\max}$ en el extremo derecho (valor 255). La distribución intermedia, que en el original estaba comprimida, queda ahora repartida a lo largo del rango completo de 0 a 255. Esto se traduce en mayores diferencias de brillo entre píxeles vecinos, mecanismo por el cual la normalización mejora el contraste percibido de la imagen.
 
 \subsubsection{Comparación entre imagen original y normalizada}
 
 La comparación entre la imagen original y la imagen normalizada evidencia el efecto del procesamiento aplicado. La herramienta muestra ambas versiones en la pantalla de normalización: el panel ``Imagen Original'' y el panel ``Resultado Normalizado''.
 
-% AQUÍ AGREGA UNA IMAGEN: Vista comparativa lado a lado de la imagen original (panel izquierdo de la app) vs. la imagen normalizada (panel derecho), evidenciando la mejora de contraste. Puede ser una captura de ambos paneles de la interfaz.
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.46\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/w51_original_panel.png} % REEMPLAZAR: recorte del panel "Imagen Original"
+        \\[3pt]\small (a) Imagen original
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.46\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/w51_normalizada_panel.png} % REEMPLAZAR: recorte del panel "Resultado Normalizado"
+        \\[3pt]\small (b) Imagen normalizada
+    \end{minipage}
+    \caption{Comparación entre la imagen original de W51 y la imagen normalizada tras aplicar la expansión min-max con los rangos R[36--170], G[88--255], B[35--255].}
+    \label{fig:comparacion_norm}
+\end{figure}
 
-Tras la normalización, la imagen presenta un contraste más amplio y las estructuras que en la imagen original aparecían como zonas oscuras indiferenciadas comienzan a revelar detalles de estrellas en formación detrás del polvo. La normalización no crea información nueva: redistribuye las intensidades para que la información ya presente pase a ser perceptible visualmente.
+Tras la normalización, la imagen presenta un contraste notablemente más amplio. Las zonas oscuras del original, que correspondían a regiones de polvo frío donde se encuentran estrellas en formación, comienzan a revelar estructuras antes indiferenciadas. El efecto más evidente se aprecia en los tonos rojos y violáceos que emergen en la imagen normalizada, producto de la expansión de los tres canales de forma independiente. La normalización no crea información nueva: redistribuye las intensidades para que la información ya presente resulte perceptible visualmente.
 
 \subsubsection{Análisis de canales Rojo, Verde y Azul}
 
 Una vez observada la mejora general de la imagen, la herramienta permite analizar cada canal de color de forma independiente. Para cada canal se muestra su versión original (en escala de grises representando únicamente ese canal) y su versión normalizada, junto con los sliders de rango \textit{min} y \textit{max} que permiten ajustar el rango de normalización de forma interactiva.
 
-% AQUÍ AGREGA UNA IMAGEN: Captura de las tres tarjetas de canal (R, G y B) de la aplicación mostrando la vista original, la vista normalizada y los sliders de cada canal.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{img/canales_rgb_tarjetas.png} % REEMPLAZAR: captura de las tres tarjetas (R, G, B) con sus vistas original, normalizada y sliders
+    \caption{Tarjetas de análisis por canal de la herramienta. Cada tarjeta muestra la imagen del canal original (en grises), el histograma original y normalizado, los sliders de rango y la vista normalizada del canal.}
+    \label{fig:canales_tarjetas}
+\end{figure}
 
-\textbf{Canal rojo.} Concentra la información sobre la emisión del gas caliente y la iluminación general de la región. Presenta el histograma más amplio y se beneficia de una normalización que excluye valores extremos de fondo y saturación.
+\textbf{Canal rojo ($p_{\min}=36$, $p_{\max}=170$).} Concentra la información sobre la emisión del gas caliente y la iluminación general de la región. Su histograma original es el más amplio de los tres. La normalización elimina el fondo oscuro (por debajo de 36) y recorta la saturación extrema (por encima de 170), expandiendo la información de contraste en los valores intermedios donde residen las estructuras estelares.
 
-\textbf{Canal verde.} Presenta el mejor equilibrio entre zonas de polvo frío y gas ionizado. Al ser el canal con mayor sensibilidad a las diferencias locales de brillo, su normalización aporta el mayor incremento de contraste en bordes y estructuras intermedias.
+\textbf{Canal verde ($p_{\min}=88$, $p_{\max}=255$).} Presenta el mejor equilibrio entre zonas de polvo frío y gas ionizado. Al establecer el mínimo en 88 se eliminan los píxeles de fondo que no aportan información, y la expansión desde ese punto hasta 255 genera el mayor incremento de contraste local, haciendo visibles bordes, filamentos y estructuras intermedias que no se distinguen en el canal original.
 
-\textbf{Canal azul.} Contiene información de estructuras más frías o de mayor longitud de onda en la escala infrarroja. Su histograma tiende a ser más estrecho, y al normalizar con un rango pequeño se amplifica la información disponible, aunque también puede intensificarse el ruido si los límites se fijan de forma inadecuada.
+\textbf{Canal azul ($p_{\min}=35$, $p_{\max}=255$).} Contiene información de estructuras más frías. Su histograma original está concentrado en valores bajos. Al recortar solo el fondo más oscuro (por debajo de 35) y mantener el máximo en 255, se aprovecha toda la información disponible. Este canal amplifica la representación de las zonas de menor temperatura en la región, aportando profundidad visual a la imagen normalizada final.
 
 \subsubsection{Compresión, escala de grises y binarización}
 
@@ -215,7 +263,12 @@ Sobre la imagen en escala de grises se aplica la compresión por bloques: cada r
 
 Finalmente, la binarización aplica un umbral global $T$ sobre la imagen comprimida: los píxeles con intensidad mayor o igual a $T$ se convierten en blanco (255) y el resto en negro (0).
 
-% AQUÍ AGREGA UNA IMAGEN: Captura de la segunda pantalla de la app ("Compresión y Binarización") mostrando los tres paneles: imagen normalizada, imagen comprimida en grises e imagen binaria, con sus metadatos de resolución, factor de compresión y umbral.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{img/compresion_binarizacion_pantalla.png} % REEMPLAZAR: captura de la pantalla "Compresión y Binarización" completa
+    \caption{Segunda etapa del procesamiento en la herramienta: imagen normalizada de entrada (1080×470 px), imagen comprimida en escala de grises con bloque $2\times2$ (reducción del 75\%, relación 4.0:1) e imagen binaria con umbral $T=128$.}
+    \label{fig:compresion_binaria}
+\end{figure}
 
 \subsubsection{Controles de procesamiento}
 
@@ -231,13 +284,49 @@ La herramienta expone dos controles interactivos que influyen directamente sobre
 
 \textbf{Umbral de binarización.} Este control, implementado mediante un slider de 0 a 255, establece el valor límite que separa las regiones claras de las oscuras. Un umbral alto restringe la selección a las zonas más brillantes (gas ionizado, estrellas masivas), mientras que un umbral bajo amplía la selección incluyendo regiones de menor intensidad, con el riesgo de incorporar más ruido. La herramienta muestra en tiempo real el valor del umbral seleccionado y el valor de la media de la imagen comprimida como referencia para la selección del umbral.
 
-% AQUÍ AGREGA UNA IMAGEN: Comparativa de al menos dos resultados de binarización con umbrales distintos (por ejemplo T=84 y T=142) para mostrar el efecto del ajuste del umbral sobre la imagen de W51.
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.46\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/binaria_umbral_bajo.png} % REEMPLAZAR: imagen binaria con umbral bajo (ej. T=60 o T=84)
+        \\[3pt]\small (a) Binarización con umbral bajo ($T \approx 60$)
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.46\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/binaria_umbral_128.png} % REEMPLAZAR: imagen binaria con T=128 (valor usado en el informe)
+        \\[3pt]\small (b) Binarización con umbral $T = 128$
+    \end{minipage}
+    \caption{Comparación del efecto del umbral de binarización sobre la imagen W51 comprimida (bloque $2\times2$, media = 57.9). Un umbral bajo clasifica como blanco más regiones, incorporando zonas de brillo medio; un umbral alto ($T=128 > $ media) restringe la selección a las zonas de mayor intensidad, principalmente el gas ionizado y las estrellas masivas.}
+    \label{fig:comparacion_umbrales}
+\end{figure}
 
 \subsubsection{Resultados finales}
 
 Como cierre del procesamiento, se presentan las tres imágenes que resumen el recorrido visual completo: la imagen original de W51, la imagen normalizada y la imagen comprimida en escala de grises. Esta comparación evidencia cómo estructuras poco perceptibles al inicio —estrellas en formación detrás de nubes de polvo— se vuelven visibles después del procesamiento.
 
-% AQUÍ AGREGA UNA IMAGEN: Comparativa final de tres imágenes lado a lado: (a) original, (b) normalizada y (c) comprimida en escala de grises. Puede realizarse con una captura de pantalla de la app o editando las imágenes exportadas.
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.31\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/w51_original_panel.png} % REEMPLAZAR: imagen original de W51
+        \\[3pt]\small (a) Imagen original
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.31\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/w51_normalizada_panel.png} % REEMPLAZAR: imagen normalizada R[36-170] G[88-255] B[35-255]
+        \\[3pt]\small (b) Imagen normalizada
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.31\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/w51_gris_comprimida.png} % REEMPLAZAR: imagen en escala de grises con bloque 2x2
+        \\[3pt]\small (c) Imagen comprimida en grises
+    \end{minipage}
+    \caption{Comparación final del flujo de procesamiento sobre la imagen W51: imagen original (sin procesar), imagen normalizada con expansión min-max por canal, e imagen comprimida en escala de grises con bloque $2\times2$.}
+    \label{fig:resultados_finales}
+\end{figure}
 
 \subsection{Habilidades blandas empleadas en la práctica}
 $\blacksquare$ Trabajo en equipo \\

@@ -3,6 +3,7 @@ import modelo
 
 class EstadoPreprocesamiento:
     def __init__(self):
+        # Estado base en negro para iniciar la interfaz sin depender de archivos externos.
         self.img = np.zeros((320, 480, 3), dtype=np.uint8)
         self.rgb_norm = self.img.copy()
         self.gris_actual = modelo.gris_luma(self.img)
@@ -29,6 +30,7 @@ class EstadoPreprocesamiento:
         self.image_path = ruta
         self.img = modelo.cargar_imagen(ruta)
         self.rgb_norm = self.img.copy()
+        # Al cambiar de imagen se invalida el cache de rangos para refrescar histogramas.
         self.last_ranges = {"r": None, "g": None, "b": None}
         self.actualizar_normalizacion()
 
@@ -43,6 +45,7 @@ class EstadoPreprocesamiento:
             norm = modelo.expansion_minmax(canal, mn, mx)
             normalizados[key] = norm
 
+        # Reconstruye la imagen RGB con cada canal ya normalizado.
         self.rgb_norm = np.stack(
             [normalizados["r"], normalizados["g"], normalizados["b"]], axis=2
         )
@@ -54,6 +57,7 @@ class EstadoPreprocesamiento:
         if umbral is not None:
             self.umbral = umbral
             
+        # Pipeline derivado: gris -> compresión por bloques -> binarización.
         self.gris_actual = modelo.gris_luma(self.rgb_norm)
         self.comp_actual = modelo.reducir_resolucion(self.gris_actual, self.bloque)
         self.bin_actual = modelo.binarizar(self.comp_actual, self.umbral)
