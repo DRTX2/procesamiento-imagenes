@@ -285,14 +285,19 @@ El resultado descarta el color y conserva la información de brillo, lo que faci
 
 El ecualizador dispone de dos controles que influyen directamente sobre el resultado final del procesamiento: el tamaño de bloque, que regula el nivel de simplificación aplicado a la imagen, y el umbral de binarización, que regula la separación entre regiones claras y oscuras. Ajustar estos parámetros con criterio es determinante para preservar los rasgos visuales relevantes.
 
-\textbf{Tamaño de bloque.} Este control define el tamaño de la región cuadrada que se promedia en la compresión, de modo que cada grupo de $N \times N$ píxeles se reemplaza por un único valor. Su aporte consiste en reducir la resolución espacial de la imagen, disminuir el ruido local y rebajar la cantidad de datos a procesar; a cambio, se produce una pérdida progresiva de detalle fino. Según el tamaño seleccionado, el comportamiento es el siguiente:
+\medskip
+\noindent\textbf{Tamaño de bloque}
+
+Este control establece la dimensión de la región cuadrada utilizada en la compresión, de manera que cada bloque de $N \times N$ píxeles se sustituye por un único valor promedio. En términos prácticos, este parámetro controla el compromiso entre reducción de datos y conservación de detalle espacial: al incrementar $N$, disminuyen la variabilidad local y el ruido de alta frecuencia, pero también se atenúan bordes y estructuras pequeñas.
+
+Para mantener una evaluación consistente, se analizan cuatro configuraciones discretas disponibles en la herramienta. El comportamiento observado para cada tamaño es el siguiente:
 \begin{itemize}
-    \item \textbf{$2 \times 2$:} conserva la mayor parte del detalle. La simplificación es ligera y las estructuras finas, como bordes de vasos y pequeños exudados, se mantienen visibles.
-    \item \textbf{$4 \times 4$:} reduce más información y permite una simplificación intermedia. La imagen conserva una representación aceptable, aunque comienzan a difuminarse los detalles más pequeños.
-    \item \textbf{$8 \times 8$:} simplifica la imagen en mayor medida y resulta útil para observar patrones generales de iluminación, pero los elementos pequeños pierden nitidez.
-    \item \textbf{$16 \times 16$:} reduce en exceso la información fina y puede ocultar lesiones pequeñas, por lo que resulta poco adecuado cuando se busca conservar exudados u otras estructuras de tamaño reducido.
+    \item \textbf{$2 \times 2$:} corresponde a una compresión leve; preserva la mayor parte del detalle fino y mantiene visibles bordes vasculares y exudados de pequeña escala.
+    \item \textbf{$4 \times 4$:} ofrece un nivel intermedio de simplificación; reduce variaciones locales sin deteriorar de forma crítica la interpretación global de la escena.
+    \item \textbf{$8 \times 8$:} prioriza la visualización de patrones globales de intensidad; como contrapartida, disminuye la nitidez de estructuras pequeñas.
+    \item \textbf{$16 \times 16$:} produce una simplificación agresiva; resulta útil para análisis macroscópico, pero puede suprimir información clínica relevante de tamaño reducido.
 \end{itemize}
-El tamaño de bloque debe seleccionarse en función del objetivo del análisis: valores pequeños cuando se busca preservar el detalle y valores mayores cuando interesa observar patrones generales o reducir el volumen de datos.
+En consecuencia, la selección del tamaño de bloque debe responder al objetivo analítico: valores pequeños cuando se requiere preservar detalle diagnóstico y valores mayores cuando se prioriza la compactación de datos o la observación de tendencias globales.
 
 Para evidenciar el efecto del tamaño de bloque sobre el resultado guardado, la Figura~\ref{fig:comparacion_peso} compara la imagen original con la imagen binaria obtenida tras aplicar compresión por bloques.
 
@@ -317,7 +322,10 @@ En este caso, se aplicó una compresión por bloques de $2 \times 2$, lo que imp
 
 La compresión cumple un papel relevante dentro de un flujo de procesamiento de imágenes, ya que reduce la cantidad de datos a procesar, facilita el almacenamiento de los resultados intermedios y genera representaciones que pueden emplearse como entrada de procesos posteriores como segmentación, extracción de características, análisis de objetos o clasificación. En particular, la imagen binaria obtenida aquí simplifica la información visual a dos niveles y permite distinguir con rapidez las regiones claras de las oscuras, lo que la convierte en una representación adecuada para etapas de análisis subsiguientes.
 
-\textbf{Umbral de binarización.} Este control establece el valor límite de intensidad que separa las regiones claras de las oscuras durante la binarización. Los píxeles con valor igual o superior al umbral se representan como blancos y los inferiores como negros, por lo que su aporte consiste en definir qué zonas de la imagen se consideran relevantes frente al fondo. Un umbral alto restringe la selección únicamente a las zonas más brillantes, lo que puede aislar los exudados pero también eliminar regiones útiles. Un umbral bajo amplía la selección, lo que puede recuperar más detalle pero también introducir ruido y falsos positivos. El valor adecuado depende de las intensidades presentes en la imagen en escala de grises y suele requerir un ajuste iterativo hasta lograr una segmentación coherente con lo observado.
+\medskip
+\noindent\textbf{Umbral de binarización}
+
+Este control establece el valor límite de intensidad que separa las regiones claras de las oscuras durante la binarización. Los píxeles con valor igual o superior al umbral se representan como blancos y los inferiores como negros, por lo que su aporte consiste en definir qué zonas de la imagen se consideran relevantes frente al fondo. Un umbral alto restringe la selección únicamente a las zonas más brillantes, lo que puede aislar los exudados pero también eliminar regiones útiles. Un umbral bajo amplía la selección, lo que puede recuperar más detalle pero también introducir ruido y falsos positivos. El valor adecuado depende de las intensidades presentes en la imagen en escala de grises y suele requerir un ajuste iterativo hasta lograr una segmentación coherente con lo observado.
 
 Para ilustrar el efecto directo del umbral sobre el resultado, la Figura~\ref{fig:comparacion_umbrales} presenta dos binarizaciones de la misma imagen utilizando umbrales distintos.
 
