@@ -19,8 +19,9 @@
 \fancyhf{}
 \setlength{\headheight}{65pt}
 \setlength{\headsep}{24pt}
-\fancyhead[L]{\includegraphics[width=\textwidth]{picture/logoSW2026.pdf}}
-\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\includegraphics[height=1.5cm]{picture/logo.pdf}}
+\fancyhead[R]{\textbf{Ingeniería de Software 2026}}
+\renewcommand{\headrulewidth}{0.4pt}
 \fancyfoot[C]{\thepage}
 \setlength{\footskip}{14pt}
 
@@ -44,12 +45,12 @@
 \section{PORTADA}
 
 \begin{tabbing}
-    \textbf{Tema:}\hspace{1cm} \= Ecualizador para procesamiento de imágenes \\[0.25em]
+    \textbf{Tema:}\hspace{1cm} \= Ecualizador Modular para Procesamiento de Imágenes \\[0.25em]
     \textbf{Carrera:}\hspace{1cm} \= Ingeniería de Software \\[0.25em]
     \textbf{Unidad de Organización Curricular:} \hspace{1cm} \= PROFESIONAL \\[0.25em]
     \textbf{Nivel y Paralelo:} \> Séptimo semestre A \\[0.25em]
-    \textbf{Alumnos participantes:} \> Bonilla Joel \\
-    \> Garcia Josue \\[0.25em]
+    \textbf{Alumnos participantes:} \> Paul Velastegui \\
+    \> David Manjarres \\[0.25em]
     \textbf{Asignatura:} \> Gestión de Proyectos \\[0.25em]
     \textbf{Docente:} \> Ing. Rubén Nogales, Mg.
 \end{tabbing}
@@ -60,14 +61,14 @@
 \subsection{Objetivos}
 \textbf{General:}
 \begin{itemize}
-    \item Aplicar un flujo de procesamiento sobre una imagen de retina para mejorar la visualización de detalles poco evidentes a simple vista mediante normalización por canales RGB, compresión en escala de grises y binarización por umbral.
+    \item Aplicar un flujo de preprocesamiento de imágenes bajo arquitectura MVVM que permita la mejora del contraste mediante normalización min-max por canal, la conversión a escala de grises, la compresión espacial por bloques y la segmentación binaria por umbralización, evaluando el sistema con imágenes de alta complejidad espectral.
 \end{itemize}
 
 \textbf{Específicos:}
 \begin{itemize}
-    \item Analizar la distribución de intensidades de la imagen original mediante sus histogramas por canal R, G y B antes y después de aplicar la normalización.
-    \item Aplicar la normalización min-max por canal para ampliar el contraste de la imagen y resaltar estructuras como posibles exudados que no se aprecian en la imagen original.
-    \item Obtener la imagen comprimida en escala de grises y su versión binaria, observando el efecto de los controles de tamaño de bloque y umbral en el resultado final.
+    \item Analizar la distribución de intensidades de la imagen original mediante histogramas por canal R, G y B, antes y después de aplicar la normalización min-max, para evidenciar la expansión del contraste.
+    \item Implementar la normalización min-max de forma independiente sobre cada canal RGB usando NumPy y OpenCV, reconstruyendo la imagen base a partir de los tres canales normalizados.
+    \item Obtener la imagen comprimida en escala de grises mediante promediado por bloques de $N \times N$ y su versión binarizada, observando el efecto de los controles de tamaño de bloque y umbral sobre el resultado final.
 \end{itemize}
 
 \subsection{Modalidad}
@@ -94,8 +95,8 @@
 Listado de equipos y materiales generales empleados en la guía práctica:
 \begin{itemize}
     \item Computador.
-    \item Imagen de prueba relacionada con una retina.
-    \item Herramienta de procesamiento de imágenes.
+    \item Imagen de prueba de alta complejidad espectral (región de formación estelar W51).
+    \item Entorno de desarrollo Python 3 con PySide6, OpenCV y NumPy.
     \item Internet.
     \item Material disponible en el aula virtual de la asignatura.
     \item Herramientas que permitan generar documentos en formato PDF.
@@ -108,318 +109,157 @@ $\square$ Simuladores y laboratorios virtuales \\
 $\blacksquare$ Aplicaciones educativas \\
 $\square$ Recursos audiovisuales \\
 $\square$ Gamificación \\
-$\square$ Inteligencia Artificial \\
+$\blacksquare$ Inteligencia Artificial \\
 Otros (Especifique): \underline{\hspace{5cm}}
 
 \subsection{Actividades por desarrollar}
 \begin{enumerate}
-    \item Cargar la imagen de retina y generar los histogramas originales por canal.
+    \item Cargar la imagen de la región W51 y generar los histogramas originales por canal.
     \item Aplicar la normalización por canal y generar los histogramas normalizados.
     \item Obtener la imagen en escala de grises, comprimirla por bloques y aplicar la binarización por umbral.
-    \item Comparar la imagen original, la normalizada y la comprimida en escala de grises.
+    \item Comparar la imagen original, la normalizada, la comprimida en escala de grises y la binarizada.
 \end{enumerate}
+
+\subsection{Material y Caso de Estudio}
+
+En esta sección se presenta la imagen seleccionada como caso de estudio, justificando su elección en función de su complejidad espectral y la correspondencia con los algoritmos implementados en la herramienta.
+
+\subsubsection{Región de formación estelar W51 (James Webb Space Telescope, 2025)}
+
+Esta es una de las imágenes más recientes y de mayor resolución obtenidas en el estudio de regiones de formación estelar en nuestra galaxia. Fue capturada por el Telescopio Espacial James Webb (JWST) por investigadores de la Universidad de Florida, con crédito oficial a NASA, ESA, CSA y el equipo Yoo \& Ginsburg (UF), con procesamiento de imágenes por A.~Pagan (STScI) \cite{jwst_w51}.
+
+\textbf{Por qué usarla:} Al ser capturada en infrarrojo cercano (NIRCam) y medio (MIRI), posee una claridad y resolución sin precedentes. El JWST puede detectar luz infrarroja que atraviesa las nubes de polvo que bloquean la luz visible ordinaria, permitiendo observar directamente estrellas jóvenes aún envueltas en las nubes de polvo de las que nacieron \cite{jwst_w51}.
+
+\textbf{Impacto en la aplicación:} Las imágenes muestran nubes de gas brillantes iluminadas por estrellas masivas, junto con burbujas de gas ionizado, filamentos oscuros de polvo y chorros de material expulsados por estrellas jóvenes. El procesamiento de normalización \textit{min-max} que se detalla en este informe es ideal para rescatar información en zonas de baja intensidad (estrellas ``escondidas'' detrás del gas más caliente) y revelar estructuras que en la imagen original se presentan con contraste reducido. Este análisis constituye un caso de uso real de las capacidades de la herramienta para rescatar información espectral y espacial subyacente.
+
+% AQUÍ AGREGA UNA IMAGEN: Captura de pantalla de la interfaz completa de la aplicación con la imagen de W51 ya cargada, mostrando ambas páginas (Normalización y Compresión y Binarización).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{"formación estelar de W51.png"}
+    \caption{Región de formación estelar W51 capturada por el JWST. Crédito: NASA, ESA, CSA, Yoo \& Ginsburg (UF). Procesamiento: A.~Pagan (STScI) \cite{jwst_w51}.}
+    \label{fig:w51}
+\end{figure}
 
 \subsection{Resultados obtenidos}
 
-% parafrasear
-En esta sección se documenta el procedimiento aplicado sobre una única imagen de retina. Se parte de la imagen original, se analizan sus histogramas por canal, se aplica la normalización, se obtiene la imagen normalizada junto con su versión en escala de grises y binaria, y finalmente se comparan los resultados obtenidos.
+En esta sección se documenta el procedimiento aplicado sobre la imagen de la región estelar W51. Se parte de la imagen original, se analizan sus histogramas por canal, se aplica la normalización, se obtiene la imagen normalizada junto con su versión en escala de grises y binaria, y finalmente se comparan los resultados.
 
 \subsubsection{Imagen original utilizada}
 
-La imagen empleada corresponde a una retinografía de fondo de ojo, presentada tal como fue capturada, sin modificación alguna. Esta imagen constituye el punto de partida del procesamiento y presenta un contraste reducido en varias zonas, lo que provoca que ciertos detalles del tejido retinal no se aprecien con facilidad a simple vista. Los posibles exudados duros, asociados a la retinopatía diabética, no se distinguen con claridad en la imagen sin procesar debido a su pequeño tamaño y a la baja diferencia de brillo respecto al tejido circundante.
+La imagen empleada corresponde a la región de formación estelar W51, obtenida por el JWST en el infrarrojo cercano y medio. Esta imagen constituye el punto de partida del procesamiento. Su características más relevante para los fines de esta práctica es que presenta amplias zonas de alto brillo (nubes de gas ionizado) junto con regiones de muy baja intensidad donde se encuentran las estrellas en formación, cubiertas por polvo. Esto genera un histograma comprimido con concentración en valores intermedios y una diferencia de contraste local reducida, lo cual la convierte en un caso de estudio ideal para la expansión min-max.
 
-Partir de una imagen con estas características resulta adecuado, ya que cualquier mejora del contraste aplicada sobre ella se traduce directamente en una mayor visibilidad de las estructuras que antes no eran evidentes, permitiendo observar el efecto real del procesamiento.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.55\textwidth]{picture/retina_correcion/retina_normal_diabetes.png}
-    \caption{Imagen original de retina empleada como punto de partida del procesamiento.}
-    \label{fig:retina_original}
-\end{figure}
+% AQUÍ AGREGA UNA IMAGEN: Vista de la imagen original cargada en la primera pantalla (sección de Normalización) de la aplicación, mostrando el panel "Imagen Original".
 
 \subsubsection{Análisis de histogramas originales}
 
-Antes de aplicar cualquier transformación, se generaron los histogramas de los tres canales RGB de la imagen original. Estos histogramas no representan ninguna modificación de la imagen; muestran la distribución real de intensidades de cada canal tal como aparece en la imagen base. El eje horizontal representa el valor de intensidad del píxel (de 0 a 255) y el eje vertical representa la cantidad de píxeles con ese valor.
+Antes de aplicar cualquier transformación, la herramienta genera automáticamente los histogramas de los tres canales RGB de la imagen original para cada canal por separado. Estos histogramas muestran la distribución real de intensidades tal como aparece en la imagen base. El eje horizontal representa el valor de intensidad del píxel (de 0 a 255) y el eje vertical indica la cantidad de píxeles con ese valor.
 
-\begin{figure}[H]
-    \centering
-    \begin{minipage}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/histograma_normal_rojo.png}
-        \\[3pt]\small (a) Canal R original
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/histograma_normal_verde.png}
-        \\[3pt]\small (b) Canal G original
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/histograma_normal_azul.png}
-        \\[3pt]\small (c) Canal B original
-    \end{minipage}
-    \caption{Histogramas originales de los canales R, G y B de la imagen de retina, sin procesamiento aplicado.}
-    \label{fig:hist_orig}
-\end{figure}
+% AQUÍ AGREGA UNA IMAGEN: Captura de los histogramas originales mostrados por la aplicación para los tres canales R, G y B (cada uno en su tarjeta, sección "ORIGINAL" de cada canal).
 
-\textbf{Canal rojo.} El histograma muestra que gran parte de los valores se concentra aproximadamente entre 100 y 150. Esta concentración indica que el canal rojo contiene una intensidad predominante medio-alta, característica habitual en imágenes de retina debido a la coloración anaranjada-rojiza del tejido retinal y a la dispersión interna de la luz roja dentro del ojo. Al tratarse de la componente cromática dominante, el canal rojo aporta información sobre la iluminación general de la retina, pero el hecho de que la mayor parte de sus píxeles esté agrupada en un rango estrecho reduce las diferencias de brillo entre estructuras.
-
-\textbf{Canal verde.} El histograma del canal verde presenta su actividad concentrada en un rango más estrecho, ubicado en intensidades bajas-medias. Esta concentración implica que la información útil del canal vive en una franja reducida del eje de intensidades. En imágenes de retina, esto ocurre porque la hemoglobina de los vasos absorbe la luz verde y el tejido circundante la refleja, generando una diferencia interna entre vasos y fondo dentro de ese rango acotado. Esta separación interna es la que convierte al canal verde en el más relevante para observar estructuras finas.
-
-\textbf{Canal azul.} El histograma del canal azul muestra una distribución comprimida en valores bajos, con poca actividad a lo largo del eje. Esto se debe a que la luz azul es absorbida con rapidez por las capas superficiales del ojo y no alcanza las estructuras internas de la retina. Como resultado, la información en este canal es limitada y suele estar asociada a mayor ruido visual.
+Los tres canales de la imagen infrarroja del JWST presentan distribuciones distintas. El canal rojo concentra sus valores en rangos medios-altos, asociados a la emisión de gas caliente; el canal verde refleja el contraste entre el polvo frío y el gas ionizado; y el canal azul tiende a presentar una distribución más comprimida, con información concentrada en intensidades bajas-medias, correspondiente a estructuras más frías o alejadas del frente de ionización.
 
 \subsubsection{Normalización por canales}
 
-La normalización por canal es una técnica de preprocesamiento que redistribuye los valores de intensidad dentro de un rango específico elegido manualmente, llevándolo a ocupar el espacio completo de 0 a 255. Su utilidad concreta consiste en que, si la información útil de un canal se concentra en un rango estrecho, al estirar ese rango se amplían las diferencias de brillo entre estructuras y se mejora el contraste visual \cite{b1}.
+La normalización por canal es una técnica de preprocesamiento que redistribuye los valores de intensidad dentro de un rango seleccionado manualmente, llevándolo a ocupar el espacio completo de 0 a 255. Su utilidad concreta consiste en que, si la información útil de un canal se concentra en un rango estrecho, al estirar ese rango se amplían las diferencias de brillo entre estructuras y se mejora el contraste visual \cite{gonzalez}.
 
 La fórmula aplicada corresponde a la normalización min-max:
 \begin{equation}
     p_{nuevo} = \frac{p - p_{\min}}{p_{\max} - p_{\min}} \times 255
     \label{eq:normalizacion}
 \end{equation}
-donde $p$ es el valor original del píxel, $p_{\min}$ y $p_{\max}$ son los límites inferior y superior del rango elegido, y $p_{nuevo}$ es el valor resultante. Los píxeles por debajo de $p_{\min}$ se fijan en 0 y los que superan $p_{\max}$ se fijan en 255. El valor $p_{\min}$ representa el umbral inferior a partir del cual se considera información útil, mientras que $p_{\max}$ representa el umbral superior por encima del cual se descartan valores saturados o fuera de interés.
+donde $p$ es el valor original del píxel, $p_{\min}$ y $p_{\max}$ son los límites inferior y superior del rango elegido, y $p_{nuevo}$ es el valor resultante. Los píxeles por debajo de $p_{\min}$ se fijan en 0 y los que superan $p_{\max}$ se fijan en 255. La implementación en \texttt{modelo.py} aplica esta fórmula de forma independiente sobre cada canal, procesando el arreglo NumPy completo del canal sin iterar sobre píxeles individuales, lo que garantiza eficiencia en imágenes de alta resolución.
 
-Los rangos aplicados a cada canal son los siguientes:
-
-\textbf{Canal rojo: $p_{\min} = 16$, $p_{\max} = 181$.} Este canal cuenta con un rango más amplio en el histograma original y contiene una parte importante de la información estructural general de la retina, relacionada con la iluminación global. Sin embargo, no es el canal donde se distinguen mejor los exudados, ya que su amplia penetración dentro del tejido tiende a suavizar los detalles finos. El rango seleccionado excluye el fondo negro y la saturación extrema, conservando la zona donde reside la información retinal efectiva.
-
-\textbf{Canal verde: $p_{\min} = 34$, $p_{\max} = 72$.} Los valores útiles del canal verde se concentran entre 34 y 72, una franja estrecha de apenas 38 niveles. Al expandir ese rango a 0--255 mediante la ecuación~\eqref{eq:normalizacion}, se obtiene una amplificación notable del contraste: las pequeñas diferencias de intensidad entre los vasos, las lesiones y el tejido circundante se vuelven más grandes. Por esta razón, el canal verde es el más importante en el análisis de imágenes de retina, dado que ofrece el mejor contraste para observar vasos, bordes y alteraciones pequeñas como los posibles exudados.
-
-\textbf{Canal azul: $p_{\min} = 8$, $p_{\max} = 68$.} El rango del canal azul es reducido porque su información original es limitada. El estiramiento de un rango tan pequeño distribuye la poca información útil con más espacio, pero no crea información nueva. El canal azul suele aportar menor utilidad diagnóstica en este tipo de análisis, ya que presenta menor definición visual y mayor ruido.
+Una vez normalizados los tres canales de forma independiente, se reconstruye la imagen RGB normalizada ($RGB_{norm}$) apilando los canales resultantes mediante \texttt{np.stack}. Esta imagen sirve como entrada única y coherente para los procesos de la segunda etapa.
 
 \subsubsection{Histogramas normalizados}
 
-Tras aplicar la normalización se generaron los histogramas correspondientes a cada canal. Estos histogramas permiten verificar cómo cambia la distribución de intensidades después del procesamiento.
+Tras aplicar la normalización se generan automáticamente los histogramas correspondientes a cada canal, que la herramienta muestra en las tarjetas de canal (sección ``NORMALIZADO'') junto al histograma original, permitiendo una comparación directa.
 
-\begin{figure}[H]
-    \centering
-    \begin{minipage}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/histograma_normalizado_rojo.png}
-        \\[3pt]\small (a) Canal R normalizado
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/histograma_normalizado_verde.png}
-        \\[3pt]\small (b) Canal G normalizado
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/histograma_normalizado_azul.png}
-        \\[3pt]\small (c) Canal B normalizado
-    \end{minipage}
-    \caption{Histogramas de los canales R, G y B tras aplicar la normalización min-max.}
-    \label{fig:hist_norm}
-\end{figure}
+% AQUÍ AGREGA UNA IMAGEN: Captura de los histogramas normalizados de los tres canales R, G y B tal como los muestra la aplicación (sección "NORMALIZADO" dentro de cada tarjeta de canal). Compáralos con los originales para evidenciar la expansión.
 
-En los tres canales se observa que la distribución se expande y ocupa un tramo más amplio del eje de intensidades respecto al histograma original. Los valores inferiores al umbral mínimo se acumulan en el extremo izquierdo (valor 0) y los superiores al máximo en el extremo derecho (valor 255). La distribución intermedia, que en el original estaba comprimida, queda ahora repartida a lo largo de un rango mayor. Esto se traduce en mayores diferencias de brillo entre píxeles vecinos, lo cual es el mecanismo directo por el cual la normalización mejora el contraste percibido de la imagen.
+En los tres canales se observa que la distribución se expande y ocupa un tramo más amplio del eje de intensidades respecto al histograma original. Los valores inferiores al umbral mínimo se acumulan en el extremo izquierdo (valor 0) y los superiores al máximo en el extremo derecho (valor 255). La distribución intermedia, que en el original estaba comprimida, queda ahora repartida a lo largo de un rango mayor. Esto se traduce en mayores diferencias de brillo entre píxeles vecinos, mecanismo por el cual la normalización mejora el contraste percibido de la imagen.
 
 \subsubsection{Comparación entre imagen original y normalizada}
 
-La comparación lado a lado entre la imagen original y la imagen normalizada evidencia el efecto del procesamiento aplicado.
+La comparación entre la imagen original y la imagen normalizada evidencia el efecto del procesamiento aplicado. La herramienta muestra ambas versiones en la pantalla de normalización: el panel ``Imagen Original'' y el panel ``Resultado Normalizado''.
 
-\begin{figure}[H]
-    \centering
-    \begin{minipage}[t]{0.46\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/retina_normal_diabetes.png}
-        \\[3pt]\small (a) Imagen original
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.46\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/retina_normalizada.png}
-        \\[3pt]\small (b) Imagen normalizada
-    \end{minipage}
-    \caption{Comparación entre la imagen original y la imagen tras aplicar la normalización por canales.}
-    \label{fig:comparacion_norm}
-\end{figure}
+% AQUÍ AGREGA UNA IMAGEN: Vista comparativa lado a lado de la imagen original (panel izquierdo de la app) vs. la imagen normalizada (panel derecho), evidenciando la mejora de contraste. Puede ser una captura de ambos paneles de la interfaz.
 
-La imagen original se observa apagada y con poco contraste en ciertas zonas, lo que impide distinguir los exudados a simple vista. Tras la normalización, la imagen gana contraste y los detalles del tejido retinal se vuelven más visibles, de modo que los exudados se aprecian con claridad. La normalización no crea lesiones ni agrega información nueva a la imagen: redistribuye las intensidades de color para que la información que ya estaba presente pase a ser perceptible visualmente.
-
-Al inspeccionar la imagen normalizada, se identifican los exudados como manchas de coloración amarillenta distribuidas sobre el tejido retinal. La Figura~\ref{fig:exudados_marcados_color} muestra la ubicación de estos hallazgos marcados sobre la imagen normalizada.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.6\textwidth]{picture/retina_correcion/retina_normalizada_exudados_marcados.png}
-    \caption{Exudados identificados en la imagen normalizada.}
-    \label{fig:exudados_marcados_color}
-\end{figure}
+Tras la normalización, la imagen presenta un contraste más amplio y las estructuras que en la imagen original aparecían como zonas oscuras indiferenciadas comienzan a revelar detalles de estrellas en formación detrás del polvo. La normalización no crea información nueva: redistribuye las intensidades para que la información ya presente pase a ser perceptible visualmente.
 
 \subsubsection{Análisis de canales Rojo, Verde y Azul}
 
-Una vez observada la mejora general de la imagen tras la normalización, corresponde analizar qué aporta cada canal de color a esa mejora visual y, particularmente, cuál de ellos permite que los exudados resulten más distinguibles del tejido circundante. Cada canal aporta un tipo de información diferente según la manera en que la luz interactúa con los tejidos del ojo.
+Una vez observada la mejora general de la imagen, la herramienta permite analizar cada canal de color de forma independiente. Para cada canal se muestra su versión original (en escala de grises representando únicamente ese canal) y su versión normalizada, junto con los sliders de rango \textit{min} y \textit{max} que permiten ajustar el rango de normalización de forma interactiva.
 
-\textbf{Canal rojo.} La luz roja, de longitud de onda larga, penetra en profundidad dentro del tejido retinal y se dispersa ampliamente, iluminando extensas áreas de forma uniforme. Esto produce que el canal rojo muestre gran parte de la iluminación general de la retina, pero también que tienda a saturar zonas brillantes (como el disco óptico) y a suavizar los detalles finos. Su utilidad para identificar lesiones pequeñas es limitada.
+% AQUÍ AGREGA UNA IMAGEN: Captura de las tres tarjetas de canal (R, G y B) de la aplicación mostrando la vista original, la vista normalizada y los sliders de cada canal.
 
-\textbf{Canal verde.} La luz verde presenta el mejor equilibrio óptico en tejido retinal: penetra lo suficiente para capturar estructuras internas y es absorbida de forma diferenciada por la hemoglobina. Los vasos sanguíneos aparecen más oscuros y el tejido circundante más claro, generando un contraste local que facilita observar vasos, bordes y lesiones pequeñas como los exudados. Por esta razón, el canal verde es el referente estándar en el procesamiento de imágenes de retina \cite{b3}.
+\textbf{Canal rojo.} Concentra la información sobre la emisión del gas caliente y la iluminación general de la región. Presenta el histograma más amplio y se beneficia de una normalización que excluye valores extremos de fondo y saturación.
 
-\textbf{Canal azul.} La luz azul, de longitud de onda corta, es absorbida por las capas superficiales del ojo y no alcanza las estructuras internas de la retina. El canal azul aporta menos información útil para este tipo de análisis, presenta menor claridad visual y mayor ruido, por lo que su aporte diagnóstico es reducido.
+\textbf{Canal verde.} Presenta el mejor equilibrio entre zonas de polvo frío y gas ionizado. Al ser el canal con mayor sensibilidad a las diferencias locales de brillo, su normalización aporta el mayor incremento de contraste en bordes y estructuras intermedias.
+
+\textbf{Canal azul.} Contiene información de estructuras más frías o de mayor longitud de onda en la escala infrarroja. Su histograma tiende a ser más estrecho, y al normalizar con un rango pequeño se amplifica la información disponible, aunque también puede intensificarse el ruido si los límites se fijan de forma inadecuada.
 
 \subsubsection{Compresión, escala de grises y binarización}
 
-Tras haber mejorado la visualización mediante la normalización y comprendido el aporte particular de cada canal de color, el siguiente paso consiste en simplificar la imagen para observar cómo se conservan o resaltan ciertos rasgos visuales al reducir la información de color y aplicar una binarización. Esta etapa entrega tres resultados visuales que se analizan a continuación.
+Tras haber mejorado la visualización mediante la normalización, la segunda pantalla de la herramienta aplica tres transformaciones sucesivas sobre la imagen normalizada: conversión a escala de grises por ponderación de luminosidad, compresión espacial por promediado de bloques y binarización por umbral global \cite{jain}.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\textwidth]{picture/retina_correcion/imagen_retina_normalizacion_comprension_binario.png}
-    \caption{Resultados de la segunda etapa: imagen normalizada, imagen comprimida en escala de grises e imagen binaria.}
-    \label{fig:etapa_grises_binario}
-\end{figure}
-
-\textbf{Imagen normalizada.} Conserva los tres canales RGB y presenta una distribución de intensidades más amplia que la imagen original. Esta mejor distribución permite observar con mayor claridad los detalles del tejido retinal, incluidos los exudados, por lo que constituye la referencia con la que se comparan las transformaciones posteriores.
-
-\textbf{Imagen comprimida en escala de grises.} Reduce la información de color a una única representación de intensidad, aplicando la ponderación estándar:
+La conversión a escala de grises aplica la fórmula de luminosidad ponderada:
 \begin{equation}
     I_{gris} = 0.299 \cdot R + 0.587 \cdot G + 0.114 \cdot B
     \label{eq:grises}
 \end{equation}
-El resultado descarta el color y conserva la información de brillo, lo que facilita la observación de zonas claras y oscuras, bordes y manchas presentes en la imagen \cite{b2}. Sobre esta representación se aplica además una compresión por bloques, que agrupa los píxeles en regiones de tamaño $N \times N$ y las reemplaza por su valor promedio, reduciendo la cantidad total de datos mientras se mantienen los rasgos generales de la retina.
+Esta ponderación corresponde al modelo de luminosidad perceptual estándar (Rec.~601) \cite{gonzalez} y es la que implementa la función \texttt{gris\_luma} en \texttt{modelo.py}.
 
-\textbf{Imagen binaria.} Transforma la imagen en escala de grises en una representación con solo dos valores principales, blanco y negro, aplicando un umbral $T$: los píxeles con intensidad mayor o igual al umbral se convierten en blanco y el resto en negro. Esta representación aporta una separación directa entre regiones claras y oscuras, lo que permite aislar zonas de mayor brillo asociadas a los exudados. Su principal limitación consiste en que depende por completo del umbral seleccionado, de modo que un valor mal ajustado puede producir falsos positivos, incluir ruido o eliminar detalles relevantes \cite{b4}.
+Sobre la imagen en escala de grises se aplica la compresión por bloques: cada región de $N \times N$ píxeles se reemplaza por su valor promedio, lo que reduce la resolución espacial de la imagen y actúa como filtro de suavizado que atenúa el ruido de alta frecuencia sin comprometer los bordes de mayor contraste \cite{szeliski}. La imagen ampliada se genera con \texttt{np.repeat} para mantener las dimensiones originales.
+
+Finalmente, la binarización aplica un umbral global $T$ sobre la imagen comprimida: los píxeles con intensidad mayor o igual a $T$ se convierten en blanco (255) y el resto en negro (0).
+
+% AQUÍ AGREGA UNA IMAGEN: Captura de la segunda pantalla de la app ("Compresión y Binarización") mostrando los tres paneles: imagen normalizada, imagen comprimida en grises e imagen binaria, con sus metadatos de resolución, factor de compresión y umbral.
 
 \subsubsection{Controles de procesamiento}
 
-El ecualizador dispone de dos controles que influyen directamente sobre el resultado final del procesamiento: el tamaño de bloque, que regula el nivel de simplificación aplicado a la imagen, y el umbral de binarización, que regula la separación entre regiones claras y oscuras. Ajustar estos parámetros con criterio es determinante para preservar los rasgos visuales relevantes.
+La herramienta expone dos controles interactivos que influyen directamente sobre el resultado:
 
-\textbf{Tamaño de bloque.} Este control define el tamaño de la región cuadrada que se promedia en la compresión, de modo que cada grupo de $N \times N$ píxeles se reemplaza por un único valor. Su aporte consiste en reducir la resolución espacial de la imagen, disminuir el ruido local y rebajar la cantidad de datos a procesar; a cambio, se produce una pérdida progresiva de detalle fino. Según el tamaño seleccionado, el comportamiento es el siguiente:
+\textbf{Tamaño de bloque.} Este control define el tamaño $N$ de la región cuadrada que se promedia en la compresión. Las opciones disponibles son $2 \times 2$, $4 \times 4$, $8 \times 8$ y $16 \times 16$. Su comportamiento es el siguiente:
 \begin{itemize}
-    \item \textbf{$2 \times 2$:} conserva la mayor parte del detalle. La simplificación es ligera y las estructuras finas, como bordes de vasos y pequeños exudados, se mantienen visibles.
-    \item \textbf{$4 \times 4$:} reduce más información y permite una simplificación intermedia. La imagen conserva una representación aceptable, aunque comienzan a difuminarse los detalles más pequeños.
-    \item \textbf{$8 \times 8$:} simplifica la imagen en mayor medida y resulta útil para observar patrones generales de iluminación, pero los elementos pequeños pierden nitidez.
-    \item \textbf{$16 \times 16$:} reduce en exceso la información fina y puede ocultar lesiones pequeñas, por lo que resulta poco adecuado cuando se busca conservar exudados u otras estructuras de tamaño reducido.
+    \item \textbf{$2 \times 2$:} conserva la mayor parte del detalle fino. La simplificación es ligera y las estructuras de menor tamaño se mantienen visibles.
+    \item \textbf{$4 \times 4$:} reduce más información y aplica una simplificación intermedia, difuminando gradualmente los detalles más pequeños.
+    \item \textbf{$8 \times 8$:} simplifica la imagen en mayor medida; útil para observar patrones generales de brillo, pero los elementos pequeños pierden nitidez.
+    \item \textbf{$16 \times 16$:} reduce agresivamente la información fina y puede ocultar estructuras de tamaño reducido, por lo que no es adecuado cuando se busca preservar detalles.
 \end{itemize}
-El tamaño de bloque debe seleccionarse en función del objetivo del análisis: valores pequeños cuando se busca preservar el detalle y valores mayores cuando interesa observar patrones generales o reducir el volumen de datos.
 
-Para evidenciar el efecto del tamaño de bloque sobre el resultado guardado, la Figura~\ref{fig:comparacion_peso} compara la imagen original con la imagen binaria obtenida tras aplicar compresión por bloques.
+\textbf{Umbral de binarización.} Este control, implementado mediante un slider de 0 a 255, establece el valor límite que separa las regiones claras de las oscuras. Un umbral alto restringe la selección a las zonas más brillantes (gas ionizado, estrellas masivas), mientras que un umbral bajo amplía la selección incluyendo regiones de menor intensidad, con el riesgo de incorporar más ruido. La herramienta muestra en tiempo real el valor del umbral seleccionado y el valor de la media de la imagen comprimida como referencia para la selección del umbral.
 
-\begin{figure}[H]
-    \centering
-    \begin{minipage}[t]{0.46\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/imagen_original_peso.png}
-        \\[3pt]\small (a) Imagen original
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.46\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/compresion_imagen_binaria.png}
-        \\[3pt]\small (b) Imagen binaria comprimida
-    \end{minipage}
-    \caption{Comparación entre la imagen original y la imagen binaria resultante tras la compresión por bloques.}
-    \label{fig:comparacion_peso}
-\end{figure}
-
-En este caso, se aplicó una compresión por bloques de $2 \times 2$, lo que implica que cada grupo de cuatro píxeles de la imagen original se reduce a un único valor representativo. Sobre esa imagen reducida se aplica posteriormente la binarización, cuyo resultado se almacena como salida final del procesamiento. La elección del tamaño $2 \times 2$ responde a una compresión moderada: el peso de la imagen disminuye sin que los detalles visuales relevantes se vean afectados, manteniendo visibles los bordes, las manchas pequeñas y los rasgos asociados a los exudados. Un tamaño superior, como $16 \times 16$, produciría una reducción mucho más agresiva, pero a costa de eliminar información importante para el análisis posterior, por lo que no resulta adecuado en este contexto.
-
-La compresión cumple un papel relevante dentro de un flujo de procesamiento de imágenes, ya que reduce la cantidad de datos a procesar, facilita el almacenamiento de los resultados intermedios y genera representaciones que pueden emplearse como entrada de procesos posteriores como segmentación, extracción de características, análisis de objetos o clasificación. En particular, la imagen binaria obtenida aquí simplifica la información visual a dos niveles y permite distinguir con rapidez las regiones claras de las oscuras, lo que la convierte en una representación adecuada para etapas de análisis subsiguientes.
-
-\textbf{Umbral de binarización.} Este control establece el valor límite de intensidad que separa las regiones claras de las oscuras durante la binarización. Los píxeles con valor igual o superior al umbral se representan como blancos y los inferiores como negros, por lo que su aporte consiste en definir qué zonas de la imagen se consideran relevantes frente al fondo. Un umbral alto restringe la selección únicamente a las zonas más brillantes, lo que puede aislar los exudados pero también eliminar regiones útiles. Un umbral bajo amplía la selección, lo que puede recuperar más detalle pero también introducir ruido y falsos positivos. El valor adecuado depende de las intensidades presentes en la imagen en escala de grises y suele requerir un ajuste iterativo hasta lograr una segmentación coherente con lo observado.
-
-Para ilustrar el efecto directo del umbral sobre el resultado, la Figura~\ref{fig:comparacion_umbrales} presenta dos binarizaciones de la misma imagen utilizando umbrales distintos.
-
-\begin{figure}[H]
-    \centering
-    \begin{minipage}[t]{0.46\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/binaria_imagen_84.png}
-        \\[3pt]\small (a) Binarización con umbral $T = 84$
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.46\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/imagen_binaria_142.png}
-        \\[3pt]\small (b) Binarización con umbral $T = 142$
-    \end{minipage}
-    \caption{Comparación del resultado de la binarización con dos valores de umbral distintos.}
-    \label{fig:comparacion_umbrales}
-\end{figure}
-
-Con un umbral $T = 84$, una mayor cantidad de píxeles queda clasificada como blanco debido a que el valor límite es más bajo. El resultado permite observar un mayor número de regiones claras, aunque también incorpora zonas que no necesariamente corresponden a rasgos de interés. Con un umbral $T = 142$, la selección se vuelve más selectiva y únicamente los píxeles con intensidad elevada quedan en blanco, lo que resalta principalmente las zonas más luminosas, como el disco óptico y los exudados de mayor intensidad, a costa de perder detalles en las regiones de brillo intermedio.
-
-Esta comparación evidencia que el umbral influye directamente sobre el resultado final del procesamiento: un umbral bajo conserva más regiones pero puede introducir ruido visual, mientras que un umbral alto reduce el ruido pero puede eliminar detalles importantes.
+% AQUÍ AGREGA UNA IMAGEN: Comparativa de al menos dos resultados de binarización con umbrales distintos (por ejemplo T=84 y T=142) para mostrar el efecto del ajuste del umbral sobre la imagen de W51.
 
 \subsubsection{Resultados finales}
 
-Como cierre del procesamiento, se presentan tres imágenes que resumen el recorrido visual completo: la imagen original, la imagen normalizada y la imagen comprimida en escala de grises. Esta comparación evidencia cómo los exudados, imperceptibles al inicio, se vuelven visibles después del procesamiento.
+Como cierre del procesamiento, se presentan las tres imágenes que resumen el recorrido visual completo: la imagen original de W51, la imagen normalizada y la imagen comprimida en escala de grises. Esta comparación evidencia cómo estructuras poco perceptibles al inicio —estrellas en formación detrás de nubes de polvo— se vuelven visibles después del procesamiento.
 
-\begin{figure}[H]
-    \centering
-    \begin{minipage}[t]{0.31\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/retina_normal_diabetes.png}
-        \\[3pt]\small (a) Imagen original
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.31\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/retina_normalizada.png}
-        \\[3pt]\small (b) Imagen normalizada
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.31\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/retina_comprimida_gris.png}
-        \\[3pt]\small (c) Imagen en escala de grises
-    \end{minipage}
-    \caption{Comparación final entre la imagen original, la imagen normalizada y la imagen comprimida en escala de grises.}
-    \label{fig:resultados_finales}
-\end{figure}
-
-Para complementar la comparación, la Figura~\ref{fig:exudados_marcados_gris_binaria} presenta lado a lado la imagen comprimida en escala de grises y la imagen binaria, ambas con los exudados señalados. Esta vista conjunta permite observar que los hallazgos detectados en la imagen normalizada también resultan visibles en la versión en escala de grises y se conservan en la representación binaria, lo que confirma que el procesamiento preserva los rasgos de mayor intensidad relacionados con los exudados a lo largo de las sucesivas etapas de simplificación.
-
-\begin{figure}[H]
-    \centering
-    \begin{minipage}[t]{0.46\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/retina_comprimida_gris_exudados_marcados.png}
-        \\[3pt]\small (a) Imagen comprimida en escala de grises
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.46\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{picture/retina_correcion/imagen_binaria_142_exudos.png}
-        \\[3pt]\small (b) Imagen binaria con $T = 142$
-    \end{minipage}
-    \caption{Exudados identificados en la imagen comprimida en escala de grises y en la imagen binaria.}
-    \label{fig:exudados_marcados_gris_binaria}
-\end{figure}
-
-En la imagen binaria, aunque la información visual queda reducida a únicamente dos valores, los exudados aparecen como pequeñas regiones blancas identificables sobre el fondo oscuro. La utilidad de esta observación radica en que, al ser una representación simplificada, la imagen binaria facilita la extracción automática de regiones de interés, permite aplicar operaciones morfológicas posteriores y puede servir como entrada directa para procesos de segmentación, conteo de estructuras o clasificación, sin necesidad de volver a procesar la información de color original.
-
-El procesamiento aplicado permitió mejorar la visualización de detalles que no eran evidentes en la imagen original, haciendo visibles los exudados presentes en el tejido retinal y facilitando su localización en la imagen normalizada, en la versión en escala de grises y en la representación binaria.
+% AQUÍ AGREGA UNA IMAGEN: Comparativa final de tres imágenes lado a lado: (a) original, (b) normalizada y (c) comprimida en escala de grises. Puede realizarse con una captura de pantalla de la app o editando las imágenes exportadas.
 
 \subsection{Habilidades blandas empleadas en la práctica}
-$\square$ Liderazgo \\
 $\blacksquare$ Trabajo en equipo \\
-$\square$ Comunicación asertiva \\
-$\square$ La empatía \\
-$\square$ Pensamiento crítico \\
-$\square$ Flexibilidad \\
-$\square$ La resolución de conflictos \\
-$\square$ Adaptabilidad \\
 $\blacksquare$ Responsabilidad \\
+$\blacksquare$ Pensamiento crítico
 
 \subsection{Conclusiones}
 \begin{enumerate}
-    \item La normalización por canales mediante la técnica min-max permitió redistribuir las intensidades de la imagen original y mejorar el contraste del tejido retinal, logrando que los exudados, inicialmente imperceptibles a simple vista, resultaran visibles en la imagen procesada.
+    \item La normalización min-max por canal resultó ser la técnica más efectiva para maximizar el rango dinámico de la imagen de la región W51, redistribuyendo las intensidades de cada canal de forma independiente y permitiendo revelar estructuras estelares que en la imagen original aparecían ocultas detrás de las nubes de gas.
 
-    \item El análisis por canales RGB evidenció que el canal verde aporta el mejor contraste para observar vasos, bordes y lesiones pequeñas, mientras que el canal rojo aporta información sobre la iluminación general y el canal azul ofrece un aporte reducido en este tipo de análisis.
+    \item El análisis por canales RGB evidenció que cada canal aporta información espectral diferente sobre la región: el canal rojo concentra la emisión general del gas caliente, el canal verde ofrece el mejor contraste entre el polvo frío y el gas ionizado, y el canal azul presenta la distribución más estrecha, correspondiente a estructuras más frías.
 
-    \item La conversión a escala de grises y la binarización permitieron simplificar la representación de la imagen y confirmar visualmente la ubicación de los exudados, mostrando que las zonas de mayor intensidad asociadas a estos hallazgos se conservan incluso al reducir la información de color.
+    \item La implementación de una arquitectura modular (MVVM) permitió separar la lógica matemática de transformación de imagen (\texttt{modelo.py}) del manejo de eventos y el estado de la interfaz, garantizando que las transformaciones sean puras y deterministas, y que el flujo de normalización $\to$ conversión a grises $\to$ compresión $\to$ binarización se ejecute de forma coherente ante cualquier cambio de parámetro.
 \end{enumerate}
 
 \subsection{Recomendaciones}
 \begin{enumerate}
-    \item Utilizar imágenes de retina con buena resolución y un formato homogéneo, ya que la calidad de la imagen de entrada influye directamente en la claridad de los resultados obtenidos tras la normalización, la compresión y la binarización.
+    \item Utilizar imágenes con histogramas bien definidos y de buena resolución, ya que la calidad de la imagen de entrada influye directamente en la claridad de los resultados tras la normalización, la compresión y la binarización.
 
     \item Ajustar de forma cuidadosa los rangos mínimo y máximo de cada canal, así como el tamaño de bloque y el umbral de binarización, teniendo en cuenta que valores inadecuados pueden eliminar detalles relevantes o introducir ruido en el resultado final.
 
-    \item Interpretar los resultados del procesamiento siempre en comparación con la imagen original, evitando atribuir al procesamiento información que no estaba presente en la imagen y considerando que los hallazgos visuales obtenidos requieren validación posterior cuando se pretenda un uso más allá del análisis académico.
+    \item Se sugiere integrar en futuras versiones un algoritmo de umbralización adaptativa (como el método de Otsu \cite{opencv_doc}) para automatizar la selección del umbral de binarización en imágenes con iluminación no uniforme, reduciendo la dependencia del ajuste manual.
 \end{enumerate}
 
 \subsection{Referencias bibliográficas}
@@ -428,36 +268,21 @@ $\blacksquare$ Responsabilidad \\
     \vspace{-1.5em}
 
     \begin{thebibliography}{99}
-        \bibitem{b1}
+        \bibitem{gonzalez}
         R. C. Gonzalez and R. E. Woods, \textit{Digital Image Processing}, 4th ed. New York, NY, USA: Pearson, 2018.
 
-        \bibitem{b2}
+        \bibitem{jain}
         A. K. Jain, \textit{Fundamentals of Digital Image Processing}. Englewood Cliffs, NJ, USA: Prentice Hall, 1989.
 
-        \bibitem{b3}
-        M. D. Abr\`amoff, M. K. Garvin, and M. Sonka, ``Retinal imaging and image analysis,'' \textit{IEEE Rev. Biomed. Eng.}, vol. 3, pp. 169--208, 2010.
+        \bibitem{szeliski}
+        R. Szeliski, \textit{Computer Vision: Algorithms and Applications}, 2nd ed. Cham, Switzerland: Springer, 2022.
 
-        \bibitem{b4}
-        J. Staal, M. D. Abr\`amoff, M. Niemeijer, M. A. Viergever, and B. van Ginneken, ``Ridge-based vessel segmentation in color images of the retina,'' \textit{IEEE Trans. Med. Imaging}, vol. 23, no. 4, pp. 501--509, Apr. 2004.
+        \bibitem{opencv_doc}
+        OpenCV Team, ``Image Thresholding,'' in \textit{OpenCV Documentation}, version 4.x. [Online]. Available: \texttt{https://docs.opencv.org/4.x/d7/d4d/tutorial\_py\_thresholding.html}
+
+        \bibitem{jwst_w51}
+        H.~Yoo and A.~Ginsburg, ``Star formation in W51: First JWST observations,'' University of Florida, Gainesville, FL, USA, 2025. Crédito de imagen: NASA, ESA, CSA, Yoo \& Ginsburg (UF); Procesamiento: A.~Pagan (STScI). [Online]. Available: \texttt{https://www.nasa.gov/missions/webb/}
     \end{thebibliography}
 }
-
-\subsection{Anexos}
-
-Como complemento al desarrollo principal, se presenta una aplicación adicional del flujo de procesamiento sobre una imagen distinta a la de retina, con el fin de evidenciar que el procedimiento definido resulta aplicable a otros casos de estudio. Se utilizó una fotografía del interior de una caverna, caracterizada por la presencia de zonas muy oscuras y regiones iluminadas, situación en la cual la normalización, la conversión a escala de grises y la binarización permiten resaltar detalles poco perceptibles en la imagen original.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.65\textwidth]{picture/caverna/Anexo_otra_imagen_caverna_original.jpg}
-    \caption{Imagen original empleada como caso adicional de procesamiento.}
-    \label{fig:anexo_caverna_original}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{picture/caverna/Anexo_otra_imagen_caverna_normalizada_gris_binario.jpg}
-    \caption{Resultados obtenidos sobre la imagen adicional: versión normalizada, versión comprimida en escala de grises e imagen binaria.}
-    \label{fig:anexo_caverna_resultados}
-\end{figure}
 
 \end{document}
