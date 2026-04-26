@@ -7,7 +7,7 @@ import modelo
 def main():
     app = QApplication(sys.argv)
     
-    # 1. Crear el Estado (ViewModel)
+    # Crear el Estado (ViewModel)
     estado = EstadoPreprocesamiento()
     
     # 2. Buscar imagen inicial y cargarla en el estado
@@ -15,7 +15,7 @@ def main():
     if ruta_inicial:
         estado.establecer_imagen(ruta_inicial)
     
-    # 3. Crear la Vista (View) inyectando el estado
+    # 3. Crear la view inyectando el estado
     ventana = VentanaPrincipal(estado)
     ventana.show()
     

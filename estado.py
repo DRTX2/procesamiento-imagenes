@@ -57,7 +57,7 @@ class EstadoPreprocesamiento:
         if umbral is not None:
             self.umbral = umbral
             
-        # Pipeline derivado: gris -> compresión por bloques -> binarización.
+        # Pipeline derivado: gris luego compresión por bloques luego binarización.
         self.gris_actual = modelo.gris_luma(self.rgb_norm)
         self.comp_actual = modelo.reducir_resolucion(self.gris_actual, self.bloque)
         self.bin_actual = modelo.binarizar(self.comp_actual, self.umbral)

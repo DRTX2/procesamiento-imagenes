@@ -1,7 +1,7 @@
 %%\documentclass[a4paper,11pt]{article}
 \documentclass[11pt]{article}
 
-\usepackage[left=2.5cm, right=2cm, top=1.5cm, bottom=3cm]{geometry}
+\usepackage[left=2.5cm, right=2cm, top=0.6cm, bottom=2cm, includehead, includefoot]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{titlesec}
@@ -14,17 +14,19 @@
 \usepackage{float}
 \usepackage{setspace}
 \usepackage{fancyhdr}
+\usepackage{needspace}
+\usepackage{etoolbox}
 
 \pagestyle{fancy}
 \fancyhf{}
-\setlength{\headheight}{65pt}
-\setlength{\headsep}{24pt}
+\setlength{\headheight}{63pt}
+\setlength{\headsep}{10pt}
 \fancyhead[L]{}
 \fancyhead[R]{}
-\fancyhead[C]{\includegraphics[height=1.5cm]{picture/logo.pdf}}
-\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[C]{\includegraphics[width=\textwidth]{picture/logo.pdf}}
+\renewcommand{\headrulewidth}{0pt}
 \fancyfoot[C]{\thepage}
-\setlength{\footskip}{14pt}
+\setlength{\footskip}{18pt}
 
 \setstretch{1.12}
 \setlength{\parskip}{0.65em}
@@ -33,8 +35,11 @@
 
 \titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
 \titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\preto{\subsection}{\Needspace{10\baselineskip}}
+\preto{\subsubsection}{\Needspace{8\baselineskip}}
 
 \title{Informe del Proyecto}
+\raggedbottom
 
 \begin{document}
 
@@ -135,7 +140,7 @@ El empleo de observaciones en el rango infrarrojo resulta fundamental en el estu
 
 Las imágenes obtenidas revelan estructuras complejas, incluyendo nubes de gas ionizado, filamentos de polvo y chorros de material expulsado por estrellas jóvenes. La aplicación de técnicas de procesamiento, como la normalización \textit{min-max}, permite resaltar regiones de baja intensidad como estrellas ``escondidas'' detrás del gas más denso y mejorar el contraste general de la imagen. Este tipo de análisis evidencia la utilidad de herramientas computacionales para extraer información espectral y espacial relevante, facilitando una interpretación más precisa de los fenómenos observados.
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.92\textwidth]{img/app_interfaz_w51.png} % captura de la app con W51 cargada (pantalla de Normalización)
     \caption{Vista superior de la interfaz de la herramienta con la imagen W51 cargada: panel de imagen original (izquierda) y tarjetas de los canales R, G y B con sus histogramas originales.}
@@ -144,7 +149,7 @@ Las imágenes obtenidas revelan estructuras complejas, incluyendo nubes de gas i
     {\footnotesize Fuente: Elaboración propia.}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.82\textwidth]{"formación estelar de W51.png"}
     \caption{Región de formación estelar W51 capturada por el JWST.}
@@ -161,7 +166,7 @@ En esta sección se documenta el procedimiento aplicado sobre la imagen de la re
 
 La imagen empleada corresponde a la región de formación estelar W51, obtenida por el JWST en el infrarrojo cercano y medio. Esta imagen constituye el punto de partida del procesamiento. Su características más relevante para los fines de esta práctica es que presenta amplias zonas de alto brillo (nubes de gas ionizado) junto con regiones de muy baja intensidad donde se encuentran las estrellas en formación, cubiertas por polvo. Esto genera un histograma comprimido con concentración en valores intermedios y una diferencia de contraste local reducida, lo cual la convierte en un caso de estudio ideal para la expansión min-max.
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.55\textwidth]{img/w51_original_panel.png}
     \caption{Panel de imagen original en la herramienta, mostrando la región W51 tal como fue cargada, sin ningún procesamiento aplicado.}
@@ -174,7 +179,7 @@ La imagen empleada corresponde a la región de formación estelar W51, obtenida 
 
 Antes de aplicar cualquier transformación, la herramienta genera automáticamente los histogramas de los tres canales RGB de la imagen original para cada canal por separado. Estos histogramas muestran la distribución real de intensidades tal como aparece en la imagen base. El eje horizontal representa el valor de intensidad del píxel (de 0 a 255) y el eje vertical indica la cantidad de píxeles con ese valor.
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.92\textwidth]{img/histogramas_originales_rgb.png}
     \caption{Histogramas originales de los canales R, G y B de la imagen W51, generados por la herramienta antes de aplicar ninguna transformación.}
@@ -210,7 +215,7 @@ Una vez normalizados los tres canales de forma independiente, se reconstruye la 
 
 Tras aplicar la normalización se generan automáticamente los histogramas correspondientes a cada canal, que la herramienta muestra en las tarjetas de canal (sección ``NORMALIZADO'') junto al histograma original, permitiendo una comparación directa.
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.92\textwidth]{img/histogramas_normalizados_rgb.png}
     \caption{Histogramas normalizados de los canales R ($p_{\min}=36$, $p_{\max}=170$), G ($p_{\min}=88$, $p_{\max}=255$) y B ($p_{\min}=35$, $p_{\max}=255$) tras aplicar la expansión min-max.}
@@ -225,7 +230,7 @@ En los tres canales se observa que la distribución se expande y ocupa un tramo 
 
 La comparación entre la imagen original y la imagen normalizada evidencia el efecto del procesamiento aplicado. La herramienta muestra ambas versiones en la pantalla de normalización: el panel ``Imagen Original'' y el panel ``Resultado Normalizado''.
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \begin{minipage}[t]{0.46\textwidth}
         \centering
@@ -250,7 +255,7 @@ Tras la normalización, la imagen presenta un contraste notablemente más amplio
 
 La herramienta permite analizar cada canal de color de forma independiente. Para cada canal se muestra su versión original en escala de grises y su versión normalizada, junto con controles deslizantes que permiten ajustar el rango $[p_{\min},\, p_{\max}]$ de forma interactiva. La vista de la interfaz para esta etapa se divide en dos capturas por la extensión de los paneles.
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.92\textwidth]{img/canales_rgb_tarjetas(1).png}
     \caption{Vista superior de las tarjetas de canal: histogramas originales y normalizados del canal R ($p_{\min}=36$, $p_{\max}=170$), G ($p_{\min}=88$, $p_{\max}=255$) y B ($p_{\min}=35$, $p_{\max}=255$) junto con las imágenes originales de cada canal en escala de grises.}
@@ -259,7 +264,7 @@ La herramienta permite analizar cada canal de color de forma independiente. Para
     {\footnotesize Fuente: Elaboración propia.}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.92\textwidth]{img/canales_rgb_tarjetas(2).png}
     \caption{Vista inferior de las tarjetas de canal: controles deslizantes de rango e imágenes normalizadas de cada canal (R, G y B), resultantes tras aplicar la expansión min-max con los rangos establecidos.}
@@ -283,7 +288,7 @@ Sobre la imagen en escala de grises se aplica la compresión por bloques: cada r
 
 Finalmente, la binarización aplica un umbral global $T$ sobre la imagen comprimida: los píxeles con intensidad mayor o igual a $T$ se convierten en blanco (255) y el resto en negro (0).
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.92\textwidth]{img/compresion_binarizacion_pantalla.png}
     \caption{Segunda etapa del procesamiento en la herramienta: imagen normalizada de entrada (1080$\times$470 px), imagen comprimida en escala de grises con bloque $2\times2$ (reducción del 75\%, relación 4.0:1) e imagen binaria con umbral $T=128$ sobre una media de 57.9.}
@@ -312,7 +317,7 @@ Este control define el tamaño $N$ de la región cuadrada que se promedia en la 
 
 Este control, implementado mediante un slider de 0 a 255, establece el valor límite que separa las regiones claras de las oscuras. Un umbral alto restringe la selección a las zonas más brillantes (gas ionizado, estrellas masivas), mientras que un umbral bajo amplía la selección incluyendo regiones de menor intensidad, con el riesgo de incorporar más ruido. La herramienta muestra en tiempo real el valor del umbral seleccionado y el valor de la media de la imagen comprimida como referencia para la selección del umbral.
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \begin{minipage}[t]{0.46\textwidth}
         \centering
@@ -335,7 +340,7 @@ Este control, implementado mediante un slider de 0 a 255, establece el valor lí
 
 Como cierre del procesamiento, se presentan las tres imágenes que resumen el recorrido visual completo: la imagen original de W51, la imagen normalizada y la imagen comprimida en escala de grises. Esta comparación evidencia cómo estructuras poco perceptibles al inicio —estrellas en formación detrás de nubes de polvo— se vuelven visibles después del procesamiento.
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
     \begin{minipage}[t]{0.31\textwidth}
         \centering
