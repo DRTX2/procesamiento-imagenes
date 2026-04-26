@@ -333,7 +333,7 @@ class VentanaPrincipal(QMainWindow):
         self._build_ui()
         self._establecer_imagen(self.image_path)
         self.ui_ready = True
-        self.actualizar_todo()
+        self.actualizar_normalizacion()
 
     def _build_ui(self):
         root = QWidget()
@@ -607,7 +607,7 @@ class VentanaPrincipal(QMainWindow):
         self.block_group = QButtonGroup(self)
         for valor in BLOCK_OPTIONS:
             radio = QRadioButton(f"{valor}x{valor}")
-            radio.toggled.connect(self.actualizar_todo)
+            radio.toggled.connect(self.actualizar_compresion)
             self.block_group.addButton(radio, valor)
             self.block_buttons[valor] = radio
             radios_layout.addWidget(radio)
@@ -627,7 +627,7 @@ class VentanaPrincipal(QMainWindow):
 
         slider_row = QHBoxLayout()
         slider_row.setSpacing(18)
-        self.t_slider = self._crear_slider(0, 255, 128, "#8B7B67", self.actualizar_todo)
+        self.t_slider = self._crear_slider(0, 255, 128, "#8B7B67", self.actualizar_compresion)
         slider_row.addWidget(self.t_slider, 1)
         self.lbl_t = QLabel("Umbral: 128")
         self.lbl_t.setStyleSheet("font-size: 13px; font-weight: 800; color: #4A443F;")
@@ -684,12 +684,27 @@ class VentanaPrincipal(QMainWindow):
             boton.style().unpolish(boton)
             boton.style().polish(boton)
             boton.update()
+        
+        # Al cambiar a la página de compresión, nos aseguramos de que todo esté actualizado
+        # con la imagen normalizada más reciente.
+        if index == 1 and self.ui_ready:
+            self.actualizar_compresion()
 
     def _set_label_image(self, label, img_np):
         size = label.size()
+        # Si el widget está oculto, size() puede ser (0,0) o muy pequeño.
+        # Usamos el minimumSize o un tamaño por defecto basado en el alto deseado.
         if size.width() <= 10 or size.height() <= 10:
-            size = label.minimumSize()
-        label.setPixmap(np_to_pixmap(img_np).scaled(size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            h = label.minimumHeight()
+            if h <= 0: h = 150
+            # Estimamos un ancho razonable basado en el alto (aprox 4:3 o 3:2)
+            size = (int(h * 1.5), h)
+        else:
+            size = (size.width(), size.height())
+            
+        from PySide6.QtCore import QSize
+        qsize = QSize(size[0], size[1])
+        label.setPixmap(np_to_pixmap(img_np).scaled(qsize, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def _obtener_rango(self, key):
         slider_min = self.channel_widgets[key]["min"]
@@ -708,7 +723,7 @@ class VentanaPrincipal(QMainWindow):
         if slider_min.value() > slider_max.value():
             slider_max.setValue(slider_min.value())
             return
-        self.actualizar_todo()
+        self.actualizar_normalizacion()
 
     def _on_channel_max_changed(self, key):
         if not self.ui_ready:
@@ -718,7 +733,7 @@ class VentanaPrincipal(QMainWindow):
         if slider_max.value() < slider_min.value():
             slider_min.setValue(slider_max.value())
             return
-        self.actualizar_todo()
+        self.actualizar_normalizacion()
 
     def _canales_originales(self):
         return {
@@ -730,7 +745,7 @@ class VentanaPrincipal(QMainWindow):
     def _resetear_canal(self, key):
         self.channel_widgets[key]["min"].setValue(0)
         self.channel_widgets[key]["max"].setValue(255)
-        self.actualizar_todo()
+        self.actualizar_normalizacion()
 
     def _resetear_todo(self):
         for key in CHANNEL_SPECS:
@@ -738,7 +753,7 @@ class VentanaPrincipal(QMainWindow):
             self.channel_widgets[key]["max"].setValue(255)
         self.block_buttons[2].setChecked(True)
         self.t_slider.setValue(128)
-        self.actualizar_todo()
+        self.actualizar_normalizacion()
 
     def _bloque_actual(self):
         if self.block_group is None:
@@ -767,7 +782,7 @@ class VentanaPrincipal(QMainWindow):
         )
         if archivo:
             self._establecer_imagen(archivo)
-            self.actualizar_todo()
+            self.actualizar_normalizacion()
 
     def _guardar_binaria(self):
         archivo, _ = QFileDialog.getSaveFileName(
@@ -789,9 +804,11 @@ class VentanaPrincipal(QMainWindow):
         if exito:
             buffer.tofile(str(archivo))
 
-    def actualizar_todo(self):
+    def actualizar_normalizacion(self):
+        """Calcula la normalización de canales y actualiza la imagen base para compresión."""
         if not self.ui_ready:
             return
+            
         originales = self._canales_originales()
         normalizados = {}
         for key, spec in CHANNEL_SPECS.items():
@@ -809,26 +826,38 @@ class VentanaPrincipal(QMainWindow):
                 widgets["hist"].draw_histograms(canal, norm, spec["color"])
                 widgets["last_range"] = current_range
 
+        # Esta es la imagen base resultante de combinar los canales normalizados
         self.rgb_norm = np.stack(
             [normalizados["r"], normalizados["g"], normalizados["b"]], axis=2
         )
         self._set_label_image(self.lbl_original_grande, self.img)
         self._set_label_image(self.lbl_resultado_grande, self.rgb_norm)
 
-        if self.t_slider is not None:
-            self._actualizar_compresion()
+        # Siempre actualizamos la compresión para que use la nueva imagen normalizada
+        self.actualizar_compresion()
 
-    def _actualizar_compresion(self):
+    def actualizar_compresion(self):
+        """Procesa la imagen normalizada actual para generar la versión comprimida y binarizada."""
+        if not self.ui_ready or self.rgb_norm is None:
+            return
+
+        # 1. Convertimos la imagen normalizada (base) a escala de grises
         self.gris_actual = gris_luma(self.rgb_norm)
+        
+        # 2. Obtenemos parámetros de los controles
         bloque = self._bloque_actual()
         umbral = int(self.t_slider.value())
+        
+        # 3. Procesamos: Reducción (compresión) y luego Binarización
         self.comp_actual = reducir_resolucion(self.gris_actual, bloque)
         self.bin_actual = binarizar(self.comp_actual, umbral)
 
+        # 4. Actualizamos Previews
         self._set_label_image(self.lbl_comp_resumen["image"], self.rgb_norm)
         self._set_label_image(self.lbl_comp_media["image"], self.comp_actual)
         self._set_label_image(self.lbl_comp_binaria["image"], self.bin_actual)
 
+        # 5. Metadatos y etiquetas
         ancho, alto = self.img.shape[1], self.img.shape[0]
         reducido_w = max(1, ancho // bloque)
         reducido_h = max(1, alto // bloque)
@@ -836,7 +865,7 @@ class VentanaPrincipal(QMainWindow):
         razon = (ancho * alto) / max(1, reducido_w * reducido_h)
         media = float(np.mean(self.comp_actual))
 
-        self.lbl_comp_resumen["meta"].setText(formato_resolucion(self.rgb_norm))
+        self.lbl_comp_resumen["meta"].setText(f"Entrada: {formato_resolucion(self.rgb_norm)} (Normalizada)")
         self.lbl_comp_media["meta"].setText(
             f"Bloque {bloque}x{bloque} | {ancho}x{alto} px -> {reducido_w}x{reducido_h} px | "
             f"Reducción: {reduccion:.1f}% | Relación: {razon:.1f}:1"
@@ -844,6 +873,7 @@ class VentanaPrincipal(QMainWindow):
         self.lbl_comp_binaria["meta"].setText(f"Umbral: {umbral} | Media: {media:.1f}")
         self.lbl_t.setText(f"Umbral: {umbral}")
         self.lbl_media.setText(f"Media: {media:.1f}")
+
 
 
 def main():
