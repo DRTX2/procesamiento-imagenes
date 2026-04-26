@@ -38,6 +38,7 @@
 
 \begin{document}
 
+\renewcommand{\figurename}{Figura}
 \renewcommand{\thesection}{\Roman{section}}
 \begin{center}
     \textbf{\underline{\normalsize APE 1}}
@@ -324,7 +325,7 @@ Este control, implementado mediante un slider de 0 a 255, establece el valor lí
         \includegraphics[width=\textwidth]{img/binaria_umbral_128.png}
         \\[3pt]\small (b) Umbral alto ($T = 128$): selección restringida
     \end{minipage}
-    \caption{Efecto del umbral de binarización sobre la imagen W51 comprimida (bloque $2\times2$, media = 57.9). Con $T$ bajo se clasifica como blanco una mayor proporción de píxeles; con $T=128$ (superior a la media) la selección se restringe a las zonas de mayor intensidad, correspondientes al gas ionizado y las estrellas más brillantes.}
+    \caption{Efecto del umbral de binarización sobre la imagen W51 comprimida (bloque $2\times2$, media = 57.9). Un umbral bajo incrementa el área blanca, mientras que $T=128$ (superior a la media) restringe la selección a regiones de alta intensidad.}
     \label{fig:comparacion_umbrales}
     \vspace{2pt}
     {\footnotesize Fuente: Elaboración propia.}
@@ -366,7 +367,7 @@ $\blacksquare$ Pensamiento crítico
 
 \subsection{Conclusiones}
 
-La normalización min-max aplicada de forma independiente sobre cada canal RGB permitió ampliar el rango dinámico de la imagen de la región W51, revelando estructuras estelares que en la imagen original permanecían ocultas detrás de las nubes de gas y polvo. El ajuste de los rangos por canal —R[36--170], G[88--255], B[35--255]— demostró que la selección deliberada de los límites de normalización determina qué información espectral se enfatiza y cuál se descarta.
+La normalización min-max aplicada de forma independiente sobre cada canal RGB permitió ampliar el rango dinámico de la imagen de la región W51, revelando estructuras estelares que en la imagen original permanecían ocultas detrás de las nubes de gas y polvo. El ajuste de los rangos por canal R[36--170], G[88--255], B[35--255] demostró que la selección deliberada de los límites de normalización determina qué información espectral se enfatiza y cuál se descarta.
 
 El análisis por canales RGB evidenció que cada canal aporta información espectral diferente: el canal rojo concentra la emisión general del gas caliente con la distribución más amplia, el canal verde ofrece el mejor contraste entre el polvo frío y el gas ionizado por su menor rango de valores útiles, y el canal azul presenta la distribución más concentrada en intensidades bajas, correspondiente a estructuras de menor temperatura en la región.
 
