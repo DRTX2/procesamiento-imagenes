@@ -134,7 +134,7 @@ Esta es una de las imágenes más recientes y de mayor resolución obtenidas en 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.92\textwidth]{img/app_interfaz_w51.png} % REEMPLAZAR: captura de la app con W51 cargada (pantalla de Normalización)
+    \includegraphics[width=0.92\textwidth]{img/app_interfaz_w51.png} % captura de la app con W51 cargada (pantalla de Normalización)
     \caption{Interfaz de la herramienta con la imagen de W51 cargada, mostrando la página de Normalización con los cuatro paneles: imagen original, canal R, canal G y canal B.}
     \label{fig:app_interfaz}
 \end{figure}
@@ -216,7 +216,7 @@ La comparación entre la imagen original y la imagen normalizada evidencia el ef
     \centering
     \begin{minipage}[t]{0.46\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{img/w51_original_panel.png} % REEMPLAZAR: recorte del panel "Imagen Original"
+        \includegraphics[width=\textwidth]{img/w51_original_panel.png}
         \\[3pt]\small (a) Imagen original
     \end{minipage}
     \hfill
@@ -237,7 +237,14 @@ Una vez observada la mejora general de la imagen, la herramienta permite analiza
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.92\textwidth]{img/canales_rgb_tarjetas.png} % REEMPLAZAR: captura de las tres tarjetas (R, G, B) con sus vistas original, normalizada y sliders
+    \includegraphics[width=0.92\textwidth]{img/canales_rgb_tarjetas(1).png} % REEMPLAZAR: captura de las tres tarjetas (R, G, B) con sus vistas original, normalizada y sliders
+    \caption{Tarjetas de análisis por canal de la herramienta. Cada tarjeta muestra la imagen del canal original (en grises), el histograma original y normalizado, los sliders de rango y la vista normalizada del canal.}
+    \label{fig:canales_tarjetas}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{img/canales_rgb_tarjetas(2).png} % REEMPLAZAR: captura de las tres tarjetas (R, G, B) con sus vistas original, normalizada y sliders
     \caption{Tarjetas de análisis por canal de la herramienta. Cada tarjeta muestra la imagen del canal original (en grises), el histograma original y normalizado, los sliders de rango y la vista normalizada del canal.}
     \label{fig:canales_tarjetas}
 \end{figure}
@@ -265,7 +272,7 @@ Finalmente, la binarización aplica un umbral global $T$ sobre la imagen comprim
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.92\textwidth]{img/compresion_binarizacion_pantalla.png} % REEMPLAZAR: captura de la pantalla "Compresión y Binarización" completa
+    \includegraphics[width=0.92\textwidth]{img/compresion_binarizacion_pantalla.png} % captura de la pantalla "Compresión y Binarización" completa
     \caption{Segunda etapa del procesamiento en la herramienta: imagen normalizada de entrada (1080×470 px), imagen comprimida en escala de grises con bloque $2\times2$ (reducción del 75\%, relación 4.0:1) e imagen binaria con umbral $T=128$.}
     \label{fig:compresion_binaria}
 \end{figure}
@@ -288,13 +295,13 @@ La herramienta expone dos controles interactivos que influyen directamente sobre
     \centering
     \begin{minipage}[t]{0.46\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{img/binaria_umbral_bajo.png} % REEMPLAZAR: imagen binaria con umbral bajo (ej. T=60 o T=84)
+        \includegraphics[width=\textwidth]{img/binaria_umbral_bajo.png}
         \\[3pt]\small (a) Binarización con umbral bajo ($T \approx 60$)
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.46\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{img/binaria_umbral_128.png} % REEMPLAZAR: imagen binaria con T=128 (valor usado en el informe)
+        \includegraphics[width=\textwidth]{img/binaria_umbral_128.png}
         \\[3pt]\small (b) Binarización con umbral $T = 128$
     \end{minipage}
     \caption{Comparación del efecto del umbral de binarización sobre la imagen W51 comprimida (bloque $2\times2$, media = 57.9). Un umbral bajo clasifica como blanco más regiones, incorporando zonas de brillo medio; un umbral alto ($T=128 > $ media) restringe la selección a las zonas de mayor intensidad, principalmente el gas ionizado y las estrellas masivas.}
@@ -324,7 +331,7 @@ Como cierre del procesamiento, se presentan las tres imágenes que resumen el re
         \includegraphics[width=\textwidth]{img/w51_gris_comprimida.png} % REEMPLAZAR: imagen en escala de grises con bloque 2x2
         \\[3pt]\small (c) Imagen comprimida en grises
     \end{minipage}
-    \caption{Comparación final del flujo de procesamiento sobre la imagen W51: imagen original (sin procesar), imagen normalizada con expansión min-max por canal, e imagen comprimida en escala de grises con bloque $2\times2$.}
+    \caption{Comparación final del flujo de procesamiento sobre la imagen W51: imagen original (sin procesar), imagen normalizada con expansión min-max por canal, e imagen comprimida en escala de grises con bloque $4\times4$.}
     \label{fig:resultados_finales}
 \end{figure}
 

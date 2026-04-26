@@ -114,8 +114,11 @@ class HistCanvas(FigureCanvas):
             hist = np.bincount(data.flatten(), minlength=256)
             ax.bar(np.arange(256), hist, width=1.0, align="edge", color=color, alpha=0.85, edgecolor=color, linewidth=0)
             ax.set_xlim(-1, 256)
-            ymax = int(hist.max()) if hist.size else 0
-            ax.set_ylim(0, max(1, int(ymax * 1.05)))
+            if hist.size > 2:
+                ymax = int(hist[1:-1].max())
+            else:
+                ymax = int(hist.max()) if hist.size else 0
+            ax.set_ylim(0, max(1, int(ymax * 1.15)))
             ax.set_facecolor("#FBF7F0")
             ax.set_title(label, fontsize=8, fontweight="bold", color="#7C6F62", pad=10)
             ax.tick_params(labelsize=7, colors="#7D7266")
