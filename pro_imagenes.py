@@ -29,9 +29,9 @@ from PySide6.QtWidgets import (
 
 IMAGE_EXTENSIONS = ("*.png", "*.jpg", "*.jpeg", "*.bmp", "*.tif", "*.tiff")
 CHANNEL_SPECS = {
-    "r": {"name": "R", "title": "Canal R - Rojo", "color": "#E25555", "index": 0},
-    "g": {"name": "G", "title": "Canal G - Verde", "color": "#31C56F", "index": 1},
-    "b": {"name": "B", "title": "Canal B - Azul", "color": "#4A86E8", "index": 2},
+    "r": {"name": "R", "title": "Canal R - Rojo", "color": "#B46A6A", "index": 0},
+    "g": {"name": "G", "title": "Canal G - Verde", "color": "#5F8A63", "index": 1},
+    "b": {"name": "B", "title": "Canal B - Azul", "color": "#6E789D", "index": 2},
 }
 BLOCK_OPTIONS = [2, 4, 8, 16]
 
@@ -60,8 +60,15 @@ def buscar_imagen_inicial():
 
 
 def cargar_imagen(path=None):
-    img_bgr = cv2.imread(str(path)) if path else None
-    if img_bgr is None:
+    if not path:
+        return np.zeros((320, 480, 3), dtype=np.uint8)
+    try:
+        # Cross-platform seguro (especialmente Windows) para rutas con tildes, ñ, etc.
+        img_array = np.fromfile(str(path), np.uint8)
+        img_bgr = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        if img_bgr is None:
+            raise ValueError()
+    except Exception:
         return np.zeros((320, 480, 3), dtype=np.uint8)
     return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
@@ -119,9 +126,9 @@ def formato_resolucion(imagen):
 def estilo_slider(color):
     return f"""
     QSlider::groove:horizontal {{
-        border: 1px solid #D6DEEA;
+        border: 1px solid #D7CCBD;
         height: 7px;
-        background: #E8EEF7;
+        background: #EDE4D9;
         border-radius: 4px;
     }}
     QSlider::sub-page:horizontal {{
@@ -129,11 +136,11 @@ def estilo_slider(color):
         border-radius: 4px;
     }}
     QSlider::add-page:horizontal {{
-        background: #D8E1EE;
+        background: #E1D7CB;
         border-radius: 4px;
     }}
     QSlider::handle:horizontal {{
-        background: white;
+        background: #FFFDF8;
         border: 2px solid {color};
         width: 14px;
         margin: -5px 0;
@@ -144,53 +151,62 @@ def estilo_slider(color):
 
 APP_STYLE = """
 QMainWindow {
-    background: #EDF3FB;
+    background: #F5EFE6;
+}
+QWidget#AppRoot,
+QWidget#PageBg,
+QStackedWidget,
+QStackedWidget > QWidget {
+    background: #F5EFE6;
 }
 QWidget {
-    color: #233247;
+    color: #3F3A36;
     font-size: 12px;
 }
 QScrollArea {
     border: none;
-    background: transparent;
+    background: #F5EFE6;
+}
+QWidget#qt_scrollarea_viewport {
+    background: #F5EFE6;
 }
 QFrame#Card {
-    background: white;
-    border: 1px solid #DCE4EF;
+    background: #FFFDF9;
+    border: 1px solid #E0D5C7;
     border-radius: 14px;
 }
 QFrame#PreviewPanel {
-    background: #F7FAFE;
-    border: 1px solid #DEE7F2;
+    background: #FBF7F0;
+    border: 1px solid #E3D9CD;
     border-radius: 10px;
 }
 QLabel#MainTitle {
     font-size: 30px;
     font-weight: 800;
-    color: #18273C;
+    color: #3F3A36;
 }
 QLabel#SectionTitle {
     font-size: 14px;
     font-weight: 800;
-    color: #1A2940;
+    color: #4A443F;
 }
 QLabel#Muted {
-    color: #67768B;
+    color: #7A6F64;
     font-size: 12px;
 }
 QLabel#MiniTitle {
-    color: #73839A;
+    color: #8A7F73;
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.5px;
 }
 QLabel#AccentGreen {
-    color: #31C56F;
+    color: #5F8A63;
     font-size: 14px;
     font-weight: 800;
 }
 QPushButton {
-    background: #3E4658;
+    background: #5E5A56;
     color: white;
     border: none;
     border-radius: 8px;
@@ -199,44 +215,44 @@ QPushButton {
     font-weight: 700;
 }
 QPushButton:hover {
-    background: #31394A;
+    background: #4F4B47;
 }
 QPushButton:pressed {
-    background: #262E3C;
+    background: #403C38;
 }
 QPushButton#PrimaryButton {
-    background: #4380E8;
+    background: #6E7B57;
 }
 QPushButton#PrimaryButton:hover {
-    background: #2F72E3;
+    background: #5F6D4A;
 }
 QPushButton#SuccessButton {
-    background: #29B35F;
+    background: #7D9A67;
 }
 QPushButton#SuccessButton:hover {
-    background: #219A52;
+    background: #708B5D;
 }
 QPushButton#GhostButton {
-    background: #E9EFF8;
-    color: #31435B;
+    background: #EFE7DC;
+    color: #5E554C;
 }
 QPushButton#GhostButton:hover {
-    background: #DCE6F4;
+    background: #E4DACD;
 }
 QPushButton#NavButton {
     background: transparent;
-    color: #65758D;
-    border: 1px solid #D6E0ED;
+    color: #7A6F64;
+    border: 1px solid #DCCDBD;
     padding: 8px 16px;
 }
 QPushButton#NavButton[active="true"] {
-    background: white;
-    color: #243753;
-    border: 1px solid #BFD0E8;
+    background: #FFFDF9;
+    color: #4A443F;
+    border: 1px solid #CDBCA9;
 }
 QRadioButton {
     spacing: 8px;
-    color: #2B3C53;
+    color: #4E473F;
     font-weight: 600;
 }
 QRadioButton::indicator {
@@ -244,14 +260,14 @@ QRadioButton::indicator {
     height: 14px;
 }
 QRadioButton::indicator:unchecked {
-    border: 2px solid #39485C;
+    border: 2px solid #5E554C;
     border-radius: 9px;
-    background: white;
+    background: #FFFDF8;
 }
 QRadioButton::indicator:checked {
-    border: 2px solid #4380E8;
+    border: 2px solid #6E7B57;
     border-radius: 9px;
-    background: #4380E8;
+    background: #6E7B57;
 }
 """
 
@@ -270,16 +286,28 @@ class HistCanvas(FigureCanvas):
         labels = ("ORIGINAL", "NORMALIZADO")
         for ax, data, label in zip(self.axes, (original, normalized), labels):
             ax.clear()
-            ax.hist(data.flatten(), bins=256, range=(0, 255), color=color, alpha=0.85)
-            ax.set_xlim(0, 255)
-            ax.set_facecolor("#F9FBFE")
-            ax.set_title(label, fontsize=8, fontweight="bold", color="#708198", pad=10)
-            ax.tick_params(labelsize=7, colors="#7B8797")
-            ax.grid(alpha=0.12, color="#8A99AD", linewidth=0.8)
+            hist = np.bincount(data.flatten(), minlength=256)
+            ax.bar(
+                np.arange(256),
+                hist,
+                width=1.0,
+                align="edge",
+                color=color,
+                alpha=0.85,
+                edgecolor=color,
+                linewidth=0,
+            )
+            ax.set_xlim(-1, 256)
+            ymax = int(hist.max()) if hist.size else 0
+            ax.set_ylim(0, max(1, int(ymax * 1.05)))
+            ax.set_facecolor("#FBF7F0")
+            ax.set_title(label, fontsize=8, fontweight="bold", color="#7C6F62", pad=10)
+            ax.tick_params(labelsize=7, colors="#7D7266")
+            ax.grid(alpha=0.12, color="#9C9084", linewidth=0.8)
             ax.spines["top"].set_visible(False)
             ax.spines["right"].set_visible(False)
-            ax.spines["left"].set_color("#D4DEEB")
-            ax.spines["bottom"].set_color("#D4DEEB")
+            ax.spines["left"].set_color("#DED3C6")
+            ax.spines["bottom"].set_color("#DED3C6")
         self.draw_idle()
 
 
@@ -287,7 +315,7 @@ class VentanaPrincipal(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Ecualizador de Imágenes — Preprocesamiento ML")
-        self.resize(1440, 920)
+        self.resize(1680, 980)
         self.setStyleSheet(APP_STYLE)
 
         self.image_path = buscar_imagen_inicial()
@@ -309,6 +337,7 @@ class VentanaPrincipal(QMainWindow):
 
     def _build_ui(self):
         root = QWidget()
+        root.setObjectName("AppRoot")
         root_layout = QVBoxLayout(root)
         root_layout.setContentsMargins(18, 16, 18, 20)
         root_layout.setSpacing(14)
@@ -317,11 +346,6 @@ class VentanaPrincipal(QMainWindow):
         titulo.setObjectName("MainTitle")
         titulo.setAlignment(Qt.AlignCenter)
         root_layout.addWidget(titulo)
-
-        subtitulo = QLabel("Normalización por canal, compresión y binarización en una interfaz ordenada.")
-        subtitulo.setObjectName("Muted")
-        subtitulo.setAlignment(Qt.AlignCenter)
-        root_layout.addWidget(subtitulo)
 
         nav_row = QHBoxLayout()
         nav_row.addStretch(1)
@@ -348,6 +372,7 @@ class VentanaPrincipal(QMainWindow):
 
     def _wrap_scroll(self, widget):
         scroll = QScrollArea()
+        scroll.setObjectName("PageScroll")
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll.setWidget(widget)
@@ -364,7 +389,7 @@ class VentanaPrincipal(QMainWindow):
         label.setMinimumHeight(alto)
         label.setMaximumHeight(alto)
         label.setStyleSheet(
-            "background: #F4F8FD; border: 1px solid #DEE7F2; border-radius: 10px; padding: 6px;"
+            "background: #FBF7F0; border: 1px solid #E3D9CD; border-radius: 10px; padding: 6px;"
         )
         return label
 
@@ -376,16 +401,18 @@ class VentanaPrincipal(QMainWindow):
             boton.style().polish(boton)
         return boton
 
-    def _crear_slider(self, mn, mx, valor, color, callback):
+    def _crear_slider(self, mn, mx, valor, color, callback=None):
         slider = QSlider(Qt.Horizontal)
         slider.setRange(mn, mx)
         slider.setValue(valor)
         slider.setStyleSheet(estilo_slider(color))
-        slider.valueChanged.connect(callback)
+        if callback is not None:
+            slider.valueChanged.connect(callback)
         return slider
 
     def _build_normalizacion_page(self):
         page = QWidget()
+        page.setObjectName("PageBg")
         layout = QVBoxLayout(page)
         layout.setContentsMargins(6, 8, 6, 16)
         layout.setSpacing(16)
@@ -393,7 +420,7 @@ class VentanaPrincipal(QMainWindow):
         encabezado = QLabel("Normalización")
         encabezado.setAlignment(Qt.AlignCenter)
         encabezado.setObjectName("SectionTitle")
-        encabezado.setStyleSheet("font-size: 18px; font-weight: 900; color: #1A2940;")
+        encabezado.setStyleSheet("font-size: 18px; font-weight: 900; color: #4A443F;")
         layout.addWidget(encabezado)
 
         grid = QGridLayout()
@@ -433,20 +460,21 @@ class VentanaPrincipal(QMainWindow):
         resumen_layout.addWidget(self.btn_cargar)
         resumen_layout.addStretch(1)
 
-        grid.addWidget(resumen_card, 0, 0, 2, 1)
+        grid.addWidget(resumen_card, 0, 0)
         grid.addWidget(self._crear_card_canal("r"), 0, 1)
         grid.addWidget(self._crear_card_canal("g"), 0, 2)
-        grid.addWidget(self._crear_card_canal("b"), 1, 1, 1, 2)
+        grid.addWidget(self._crear_card_canal("b"), 0, 3)
 
         grid.setColumnStretch(0, 1)
         grid.setColumnStretch(1, 1)
         grid.setColumnStretch(2, 1)
+        grid.setColumnStretch(3, 1)
 
         acciones = QHBoxLayout()
         acciones.addStretch(1)
         self.btn_reset_todo = self._crear_boton("Reset Todo")
         self.btn_reset_todo.clicked.connect(self._resetear_todo)
-        self.btn_ir_comp = self._crear_boton("Siguiente: Comprimir y Binarizar", "PrimaryButton")
+        self.btn_ir_comp = self._crear_boton("Comprimir y Binarizar", "PrimaryButton")
         self.btn_ir_comp.clicked.connect(lambda: self._mostrar_pagina(1))
         acciones.addWidget(self.btn_reset_todo)
         acciones.addWidget(self.btn_ir_comp)
@@ -481,21 +509,21 @@ class VentanaPrincipal(QMainWindow):
         lbl_range = QLabel("")
         lbl_range.setAlignment(Qt.AlignCenter)
         lbl_range.setObjectName("Muted")
-        lbl_range.setStyleSheet("font-weight: 700; color: #73839A;")
+        lbl_range.setStyleSheet("font-weight: 700; color: #7A6F64;")
         layout.addWidget(lbl_range)
 
         label_min = QLabel("Min")
-        label_min.setStyleSheet("font-size: 12px; font-weight: 800; color: #516179;")
+        label_min.setStyleSheet("font-size: 12px; font-weight: 800; color: #6D6358;")
         layout.addWidget(label_min)
 
-        slider_min = self._crear_slider(0, 255, 0, spec["color"], self.actualizar_todo)
+        slider_min = self._crear_slider(0, 255, 0, spec["color"])
         layout.addWidget(slider_min)
 
         label_max = QLabel("Max")
-        label_max.setStyleSheet("font-size: 12px; font-weight: 800; color: #516179;")
+        label_max.setStyleSheet("font-size: 12px; font-weight: 800; color: #6D6358;")
         layout.addWidget(label_max)
 
-        slider_max = self._crear_slider(0, 255, 255, spec["color"], self.actualizar_todo)
+        slider_max = self._crear_slider(0, 255, 255, spec["color"])
         layout.addWidget(slider_max)
 
         subtitulo_norm = QLabel("NORMALIZADO")
@@ -520,10 +548,15 @@ class VentanaPrincipal(QMainWindow):
             "range": lbl_range,
             "last_range": None,
         }
+
+        slider_min.valueChanged.connect(lambda _, canal=key: self._on_channel_min_changed(canal))
+        slider_max.valueChanged.connect(lambda _, canal=key: self._on_channel_max_changed(canal))
+
         return card
 
     def _build_compresion_page(self):
         page = QWidget()
+        page.setObjectName("PageBg")
         layout = QVBoxLayout(page)
         layout.setContentsMargins(6, 8, 6, 16)
         layout.setSpacing(16)
@@ -531,7 +564,7 @@ class VentanaPrincipal(QMainWindow):
         encabezado = QLabel("Compresión y Binarización")
         encabezado.setAlignment(Qt.AlignCenter)
         encabezado.setObjectName("SectionTitle")
-        encabezado.setStyleSheet("font-size: 18px; font-weight: 900; color: #1A2940;")
+        encabezado.setStyleSheet("font-size: 18px; font-weight: 900; color: #4A443F;")
         layout.addWidget(encabezado)
 
         previews = QGridLayout()
@@ -566,7 +599,7 @@ class VentanaPrincipal(QMainWindow):
         controles_layout.addWidget(titulo_ctrl)
 
         bloque_title = QLabel("Tamaño de bloque (promedio N x N, reduce resolución):")
-        bloque_title.setStyleSheet("font-size: 13px; font-weight: 800; color: #22324A;")
+        bloque_title.setStyleSheet("font-size: 13px; font-weight: 800; color: #4A443F;")
         controles_layout.addWidget(bloque_title)
 
         radios_layout = QHBoxLayout()
@@ -584,7 +617,7 @@ class VentanaPrincipal(QMainWindow):
 
         th_row = QHBoxLayout()
         umbral_title = QLabel("Umbral de binarización (threshold):")
-        umbral_title.setStyleSheet("font-size: 13px; font-weight: 800; color: #22324A;")
+        umbral_title.setStyleSheet("font-size: 13px; font-weight: 800; color: #4A443F;")
         self.lbl_media = QLabel("")
         self.lbl_media.setObjectName("Muted")
         th_row.addWidget(umbral_title)
@@ -594,10 +627,10 @@ class VentanaPrincipal(QMainWindow):
 
         slider_row = QHBoxLayout()
         slider_row.setSpacing(18)
-        self.t_slider = self._crear_slider(0, 255, 128, "#7D8798", self.actualizar_todo)
+        self.t_slider = self._crear_slider(0, 255, 128, "#8B7B67", self.actualizar_todo)
         slider_row.addWidget(self.t_slider, 1)
         self.lbl_t = QLabel("Umbral: 128")
-        self.lbl_t.setStyleSheet("font-size: 13px; font-weight: 800; color: #233247;")
+        self.lbl_t.setStyleSheet("font-size: 13px; font-weight: 800; color: #4A443F;")
         slider_row.addWidget(self.lbl_t)
         controles_layout.addLayout(slider_row)
 
@@ -667,6 +700,26 @@ class VentanaPrincipal(QMainWindow):
             mn, mx = mx, mn
         return mn, mx
 
+    def _on_channel_min_changed(self, key):
+        if not self.ui_ready:
+            return
+        slider_min = self.channel_widgets[key]["min"]
+        slider_max = self.channel_widgets[key]["max"]
+        if slider_min.value() > slider_max.value():
+            slider_max.setValue(slider_min.value())
+            return
+        self.actualizar_todo()
+
+    def _on_channel_max_changed(self, key):
+        if not self.ui_ready:
+            return
+        slider_min = self.channel_widgets[key]["min"]
+        slider_max = self.channel_widgets[key]["max"]
+        if slider_max.value() < slider_min.value():
+            slider_min.setValue(slider_max.value())
+            return
+        self.actualizar_todo()
+
     def _canales_originales(self):
         return {
             "r": self.img[:, :, 0],
@@ -725,8 +778,16 @@ class VentanaPrincipal(QMainWindow):
         )
         if not archivo:
             return
+        
         salida = cv2.cvtColor(self.bin_actual, cv2.COLOR_GRAY2BGR)
-        cv2.imwrite(archivo, salida)
+        ext = Path(archivo).suffix.lower()
+        if not ext:
+            ext = ".png"
+            
+        # Seguro cross-platform (Windows) para rutas con caracteres especiales
+        exito, buffer = cv2.imencode(ext, salida)
+        if exito:
+            buffer.tofile(str(archivo))
 
     def actualizar_todo(self):
         if not self.ui_ready:
